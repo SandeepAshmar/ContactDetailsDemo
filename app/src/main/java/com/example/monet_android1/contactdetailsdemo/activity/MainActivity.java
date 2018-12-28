@@ -26,6 +26,7 @@ import com.example.monet_android1.contactdetailsdemo.adapter.ViewPagerAdapter;
 import com.example.monet_android1.contactdetailsdemo.appDatabase.MyCallsAppDatabase;
 import com.example.monet_android1.contactdetailsdemo.appDatabase.MyContactAppDatabase;
 import com.example.monet_android1.contactdetailsdemo.dao.MyCallDao;
+import com.example.monet_android1.contactdetailsdemo.fragment.AddContactFragment;
 import com.example.monet_android1.contactdetailsdemo.fragment.CallDetailsFragment;
 import com.example.monet_android1.contactdetailsdemo.fragment.ContactsFragment;
 
@@ -51,6 +52,7 @@ public class MainActivity extends AppCompatActivity {
         adapter = new ViewPagerAdapter(getSupportFragmentManager());
         adapter.addFragment(new CallDetailsFragment(), "Call log");
         adapter.addFragment(new ContactsFragment(), "Contacts");
+        adapter.addFragment(new AddContactFragment(), "Add");
         viewPager.setAdapter(adapter);
         tabLayout.setupWithViewPager(viewPager);
         tabLayout.setSelectedTabIndicatorColor(Color.parseColor("#000000"));
