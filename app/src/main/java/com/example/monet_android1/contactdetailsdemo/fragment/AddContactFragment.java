@@ -49,6 +49,8 @@ public class AddContactFragment extends Fragment {
             Toast.makeText(getActivity(), "Please enter name", Toast.LENGTH_SHORT).show();
         }else if(mobile.getText() == null || mobile.getText().toString().isEmpty()){
             Toast.makeText(getActivity(), "Please enter mobile number", Toast.LENGTH_SHORT).show();
+        }else if(mobile.getText().length() < 10){
+            Toast.makeText(getActivity(), "Please enter 10 digit mobile number", Toast.LENGTH_SHORT).show();
         }else{
 
             List<Contacts> contactsList = myContactAppDatabase.myContactDao().getContactUsers();
@@ -63,6 +65,8 @@ public class AddContactFragment extends Fragment {
             if(isMatched){
                 Toast.makeText(getActivity(), "Contact number already exist", Toast.LENGTH_SHORT).show();
             }else{
+
+
                 Contacts contacts = new Contacts();
                 contacts.setName(name.getText().toString());
                 contacts.setMobile(mobile.getText().toString());

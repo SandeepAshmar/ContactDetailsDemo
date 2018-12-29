@@ -115,14 +115,24 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.ViewHo
             @Override
             public void onClick(View v) {
 
-                contacts.setId(id);
-                contacts.setName(name.getText().toString());
-                contacts.setMobile(mobile.getText().toString());
-                myContactAppDatabase.myContactDao().updateContactUser(contacts);
-                Toast.makeText(context, "contact number updated successfully", Toast.LENGTH_SHORT).show();
-                CallDetailsFragment.readFromDb(context);
-                ContactsFragment.readFromDb(context);
-                dialog.dismiss();
+                if(name.getText().toString().isEmpty()){
+                    Toast.makeText(context, "Please enter name", Toast.LENGTH_SHORT).show();
+                }else if(mobile.getText().toString().isEmpty()){
+                    Toast.makeText(context, "Please enter mobile number", Toast.LENGTH_SHORT).show();
+                }else if(mobile.getText().length() < 10){
+                    Toast.makeText(context, "Please enter 10 digit mobile number", Toast.LENGTH_SHORT).show();
+                }else{
+                    contacts.setId(id);
+                    contacts.setName(name.getText().toString());
+                    contacts.setMobile(mobile.getText().toString());
+                    myContactAppDatabase.myContactDao().updateContactUser(contacts);
+                    Toast.makeText(context, "contact number updated successfully", Toast.LENGTH_SHORT).show();
+                    CallDetailsFragment.readFromDb(context);
+                    ContactsFragment.readFromDb(context);
+                    dialog.dismiss();
+                }
+
+
             }
         });
 
