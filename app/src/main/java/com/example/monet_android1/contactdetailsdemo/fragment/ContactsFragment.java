@@ -1,6 +1,7 @@
 package com.example.monet_android1.contactdetailsdemo.fragment;
 
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -26,11 +27,11 @@ import static com.example.monet_android1.contactdetailsdemo.activity.MainActivit
  */
 public class ContactsFragment extends Fragment {
 
-    private TextView tv_noContact;
-    private RecyclerView recyclerView;
+    private static TextView tv_noContact;
+    private static RecyclerView recyclerView;
     private LinearLayoutManager layoutManager;
     private List<Contacts> contactsList;
-    private ContactsAdapter contactsAdapter;
+    private static ContactsAdapter contactsAdapter;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -42,15 +43,15 @@ public class ContactsFragment extends Fragment {
         recyclerView = view.findViewById(R.id.rv_contacts);
         layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
-        readFromDb();
+        readFromDb(getActivity());
 
         return view;
     }
 
-    private void readFromDb() {
+    public static void readFromDb(Context context) {
 
         List<Contacts> contactsList = myContactAppDatabase.myContactDao().getContactUsers();
-        contactsAdapter = new ContactsAdapter(getActivity(), contactsList);
+        contactsAdapter = new ContactsAdapter(context, contactsList);
         recyclerView.setAdapter(contactsAdapter);
         contactsAdapter.notifyDataSetChanged();
         if(contactsList.size()>0){

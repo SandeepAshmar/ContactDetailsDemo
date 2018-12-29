@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.telecom.Call;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,9 +12,12 @@ import android.widget.TextView;
 
 import com.example.monet_android1.contactdetailsdemo.R;
 import com.example.monet_android1.contactdetailsdemo.user.CallLog;
+import com.example.monet_android1.contactdetailsdemo.user.Contacts;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.example.monet_android1.contactdetailsdemo.activity.MainActivity.myContactAppDatabase;
 
 public class CallLogAdapter extends RecyclerView.Adapter<CallLogAdapter.ViewHolder> {
 
@@ -40,11 +44,7 @@ public class CallLogAdapter extends RecyclerView.Adapter<CallLogAdapter.ViewHold
         holder.date.setText(callLogs.get(position).getTime());
         holder.callType.setText(callLogs.get(position).getCallType());
 
-        if(callLogs.get(position).getName().isEmpty()){
-            holder.mobile.setText(callLogs.get(position).getMobile());
-        }else{
-            holder.mobile.setText(callLogs.get(position).getName());
-        }
+        getName(callLogs.get(position).getMobile(), holder, position);
 
         if(callLogs.get(position).getCallType().equals("Incoming Call")
                 || callLogs.get(position).getCallType().equals("Outgoing Call")){
@@ -72,5 +72,25 @@ public class CallLogAdapter extends RecyclerView.Adapter<CallLogAdapter.ViewHold
             callType = itemView.findViewById(R.id.tv_callType);
 
         }
+    }
+
+    protected void getName(String number, ViewHolder holder, int position){
+        List<Contacts> contacts = myContactAppDatabase.myContactDao().getContactUsers();
+        String name = "";
+        number = number.replace("+91", "");
+        for (Contacts usr : contacts) {
+            String userMobile = usr.getMobile();
+            if (number.equals(userMobile)) {
+                name = usr.getName();
+            }
+        }
+
+        if(name.isEmpty()){
+            holder.mobile.setText(callLogs.get(position).getMobile());
+        }else{
+            holder.mobile.setText(name);
+            name = "";
+        }
+
     }
 }

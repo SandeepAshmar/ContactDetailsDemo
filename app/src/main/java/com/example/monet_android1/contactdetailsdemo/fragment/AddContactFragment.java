@@ -15,6 +15,7 @@ import com.example.monet_android1.contactdetailsdemo.user.Contacts;
 import java.util.List;
 
 import static com.example.monet_android1.contactdetailsdemo.activity.MainActivity.myContactAppDatabase;
+import static com.example.monet_android1.contactdetailsdemo.fragment.ContactsFragment.readFromDb;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -67,6 +68,9 @@ public class AddContactFragment extends Fragment {
                 contacts.setMobile(mobile.getText().toString());
                 myContactAppDatabase.myContactDao().addContactUser(contacts);
                 Toast.makeText(getActivity(), "save successfully", Toast.LENGTH_SHORT).show();
+                name.setText("");
+                mobile.setText("");
+                readFromDb(getActivity());
             }
 
         }
