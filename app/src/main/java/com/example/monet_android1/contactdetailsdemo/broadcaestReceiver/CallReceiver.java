@@ -106,22 +106,9 @@ public class CallReceiver extends BroadcastReceiver {
         String dateString = dateFormat.format(new Date(System.currentTimeMillis()));
         CallLog callLog = new CallLog();
         callLog.setMobile(number);
-        callLog.setName(getName(number));
         callLog.setCallType(callType);
         callLog.setTime(dateString);
         myCallsAppDatabase.myCallDao().addCallDetails(callLog);
-    }
-
-    protected String getName(String number){
-        List<Contacts> contacts = myContactAppDatabase.myContactDao().getContactUsers();
-        String name = "";
-        for (Contacts usr : contacts) {
-            String userMobile = usr.getMobile();
-            if (number.equals(userMobile)) {
-                name = usr.getName();
-            }
-        }
-        return name;
     }
 
 }

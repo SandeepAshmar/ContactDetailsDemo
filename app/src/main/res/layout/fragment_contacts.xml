@@ -5,11 +5,32 @@
     android:layout_height="match_parent"
     tools:context=".fragment.ContactsFragment">
 
+    <EditText
+        android:id="@+id/edt_contactSearch"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Search contact"
+        android:background="@drawable/box"
+        android:minHeight="50dp"
+        android:padding="5dp"
+        android:layout_margin="10dp"
+        android:drawableRight="@drawable/ic_search_black_24dp"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_below="@id/edt_contactSearch"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="10dp"
+        android:background="@android:color/black"/>
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/rv_contacts"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:visibility="gone" />
+        android:visibility="gone"
+        android:layout_marginTop="10dp"
+        android:layout_below="@id/edt_contactSearch"/>
 
     <TextView
         android:id="@+id/tv_noContact"

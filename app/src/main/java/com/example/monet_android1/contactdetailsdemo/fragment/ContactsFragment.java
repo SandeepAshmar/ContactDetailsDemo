@@ -9,6 +9,9 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
+import android.widget.EditText;
+import android.widget.ListAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,6 +35,7 @@ public class ContactsFragment extends Fragment {
     private LinearLayoutManager layoutManager;
     private List<Contacts> contactsList;
     private static ContactsAdapter contactsAdapter;
+    private EditText search;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -41,10 +45,10 @@ public class ContactsFragment extends Fragment {
 
         tv_noContact = view.findViewById(R.id.tv_noContact);
         recyclerView = view.findViewById(R.id.rv_contacts);
+        search = view.findViewById(R.id.edt_contactSearch);
         layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
         readFromDb(getActivity());
-
         return view;
     }
 

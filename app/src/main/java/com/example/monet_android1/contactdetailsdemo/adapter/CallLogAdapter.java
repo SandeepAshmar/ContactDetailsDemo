@@ -2,7 +2,9 @@ package com.example.monet_android1.contactdetailsdemo.adapter;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -71,6 +73,7 @@ public class CallLogAdapter extends RecyclerView.Adapter<CallLogAdapter.ViewHold
     private void showPopup(String number, final int position, ViewHolder holder) {
         String numberSearch = "";
         number = number.replace("+91", "");
+        final String finalNumber = number;
         for (int i = 0; i < contacts.size(); i++) {
             if(contacts.get(i).getMobile().equals(number)){
                 numberSearch = number;
@@ -78,7 +81,8 @@ public class CallLogAdapter extends RecyclerView.Adapter<CallLogAdapter.ViewHold
         }
 
         if (number == numberSearch) {
-            Toast.makeText(context, "Call will apear here", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + finalNumber));
+            context.startActivity(intent);
         } else {
             PopupMenu popupMenu = new PopupMenu(context, holder.itemView);
             popupMenu.getMenu().add("Add Contact");
@@ -91,7 +95,8 @@ public class CallLogAdapter extends RecyclerView.Adapter<CallLogAdapter.ViewHold
                     if (item.getTitle().equals("Add Contact")) {
                         saveNumber(position);
                     } else {
-                        Toast.makeText(context, "Call will apear here", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + finalNumber));
+                        context.startActivity(intent);
                     }
 
                     return true;
