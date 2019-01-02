@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
+import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -18,6 +19,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.monet_android1.contactdetailsdemo.R;
+import com.example.monet_android1.contactdetailsdemo.click.CallClickListner;
 import com.example.monet_android1.contactdetailsdemo.user.CallLog;
 
 import java.util.List;
@@ -28,10 +30,13 @@ public class CallLogAdapter extends RecyclerView.Adapter<CallLogAdapter.ViewHold
 
     private Context context;
     private List<CallLog> callLogs;
+    private String title = "";
+    private CallClickListner callClickListner;
 
-    public CallLogAdapter(Context context, List<CallLog> callLogs) {
+    public CallLogAdapter(Context context, List<CallLog> callLogs, CallClickListner callClickListner) {
         this.context = context;
         this.callLogs = callLogs;
+        this.callClickListner = callClickListner;
     }
 
     @NonNull
@@ -66,7 +71,7 @@ public class CallLogAdapter extends RecyclerView.Adapter<CallLogAdapter.ViewHold
         });
     }
 
-    private void showPopup(String number, final int position, ViewHolder holder) {
+    private String showPopup(String number, final int position, final ViewHolder holder) {
         String numberSearch = "";
         number = number.replace("+91", "");
         final String finalNumber = number;
@@ -77,8 +82,7 @@ public class CallLogAdapter extends RecyclerView.Adapter<CallLogAdapter.ViewHold
         }
 
         if (number == numberSearch) {
-            Intent intent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + finalNumber));
-            context.startActivity(intent);
+            title = finalNumber;
         } else {
             PopupMenu popupMenu = new PopupMenu(context, holder.itemView);
             popupMenu.getMenu().add("Add Contact");
@@ -89,7 +93,7 @@ public class CallLogAdapter extends RecyclerView.Adapter<CallLogAdapter.ViewHold
                 public boolean onMenuItemClick(MenuItem item) {
 
                     if (item.getTitle().equals("Add Contact")) {
-                        saveNumber(position);
+                        callClickListner.onItemClick(callLogs.get(position).getMobile());
                     } else {
                         Intent intent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + finalNumber));
                         context.startActivity(intent);
@@ -100,45 +104,7 @@ public class CallLogAdapter extends RecyclerView.Adapter<CallLogAdapter.ViewHold
             });
             popupMenu.show();
         }
-    }
-
-    private void saveNumber(int position) {
-        final Dialog dialog = new Dialog(context, R.style.DialogTheme);
-        dialog.setCancelable(false);
-        dialog.setContentView(R.layout.update_layout);
-        final EditText name, mobile;
-        Button update, cancel;
-        TextView tv_update;
-        name = dialog.findViewById(R.id.edt_updateName);
-        mobile = dialog.findViewById(R.id.edt_updateMobile);
-        update = dialog.findViewById(R.id.btn_update);
-        cancel = dialog.findViewById(R.id.btn_updateCancel);
-        tv_update = dialog.findViewById(R.id.tv_popUpdate);
-
-        tv_update.setText("Save Number");
-        update.setText("Save");
-
-        name.setHint("Enter name");
-        String number =callLogs.get(position).getMobile();
-        number = number.replace("+91", "");
-        mobile.setText(number);
-
-        update.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-            }
-        });
-
-        cancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dialog.dismiss();
-            }
-        });
-
-        dialog.show();
-
+        return title;
     }
 
     @Override

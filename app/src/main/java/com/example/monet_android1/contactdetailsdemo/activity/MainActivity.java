@@ -1,6 +1,7 @@
 package com.example.monet_android1.contactdetailsdemo.activity;
 
 import android.Manifest;
+import android.app.Activity;
 import android.arch.persistence.room.Room;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -21,6 +22,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.widget.Toast;
 
 import com.example.monet_android1.contactdetailsdemo.R;
 import com.example.monet_android1.contactdetailsdemo.adapter.ViewPagerAdapter;
@@ -31,7 +33,6 @@ import com.example.monet_android1.contactdetailsdemo.user.ContactList;
 
 import java.util.ArrayList;
 
-import static com.example.monet_android1.contactdetailsdemo.fragment.CallDetailsFragment.readFromDb;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -39,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
     private ViewPager viewPager;
     private ViewPagerAdapter adapter;
     public static MyCallsAppDatabase myCallsAppDatabase;
-    private BroadcastReceiver br;
+    public static BroadcastReceiver br;
     public static ContactList contactList = new ContactList();
     private ArrayList<String> nameList = new ArrayList<>();
     private ArrayList<String> mobileList = new ArrayList<>();
@@ -63,13 +64,6 @@ public class MainActivity extends AppCompatActivity {
                 .allowMainThreadQueries()
                 .build();
 
-        br = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                readFromDb(MainActivity.this);
-            }
-        };
-
     }
 
     @Override
@@ -83,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
         registerReceiver(br, new IntentFilter("CallApp"));
     }
 
-    private void getContactList(){
+    private void getContactList() {
         contactList.getName().clear();
         contactList.getMobile().clear();
         Cursor phones = getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null, null, null);
@@ -96,7 +90,7 @@ public class MainActivity extends AppCompatActivity {
             mobileList.add(phoneNumber);
         }
         for (int i = 0; i < nameList.size(); i++) {
-            if (!contactList.getMobile().contains(mobileList.get(i))){
+            if (!contactList.getMobile().contains(mobileList.get(i))) {
                 contactList.setName(nameList.get(i));
                 contactList.setMobile(mobileList.get(i));
             }

@@ -16,10 +16,22 @@
         android:layout_margin="10dp"
         android:drawableRight="@drawable/ic_search_black_24dp"/>
 
+    <TextView
+        android:id="@+id/tv_addContact"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_margin="10dp"
+        android:textSize="16sp"
+        android:text="Add New Contact"
+        android:gravity="center"
+        android:background="@drawable/box"
+        android:textColor="@color/colorPrimaryDark"
+        android:layout_below="@id/edt_contactSearch"/>
+
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:layout_below="@id/edt_contactSearch"
+        android:layout_below="@id/tv_addContact"
         android:layout_marginTop="5dp"
         android:layout_marginBottom="10dp"
         android:background="@android:color/black"/>
@@ -30,7 +42,7 @@
         android:layout_height="wrap_content"
         android:visibility="gone"
         android:layout_marginTop="10dp"
-        android:layout_below="@id/edt_contactSearch"/>
+        android:layout_below="@id/tv_addContact"/>
 
     <TextView
         android:id="@+id/tv_noContact"
