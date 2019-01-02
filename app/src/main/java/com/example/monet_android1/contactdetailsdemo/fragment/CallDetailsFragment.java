@@ -57,12 +57,6 @@ public class CallDetailsFragment extends Fragment {
         rv_calls.setLayoutManager(layoutManager);
         readFromDb(getActivity());
 
-        br = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                readFromDb(getActivity());
-            }
-        };
         return view;
     }
 
@@ -85,7 +79,7 @@ public class CallDetailsFragment extends Fragment {
 
     }
 
-    private void addNewContact(String number) {
+    public void addNewContact(String number) {
         Intent contactIntent = new Intent(ContactsContract.Intents.Insert.ACTION);
         contactIntent.setType(ContactsContract.RawContacts.CONTENT_TYPE);
         contactIntent
@@ -106,5 +100,11 @@ public class CallDetailsFragment extends Fragment {
                 Toast.makeText(getActivity(), "Contact not added", Toast.LENGTH_SHORT).show();
             }
         }
+    }
+
+    @Override
+    public void onResume() {
+        readFromDb(getActivity());
+        super.onResume();
     }
 }

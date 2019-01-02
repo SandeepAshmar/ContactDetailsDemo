@@ -29,6 +29,7 @@ import com.example.monet_android1.contactdetailsdemo.adapter.ViewPagerAdapter;
 import com.example.monet_android1.contactdetailsdemo.appDatabase.MyCallsAppDatabase;
 import com.example.monet_android1.contactdetailsdemo.fragment.CallDetailsFragment;
 import com.example.monet_android1.contactdetailsdemo.fragment.ContactsFragment;
+import com.example.monet_android1.contactdetailsdemo.user.CallLog;
 import com.example.monet_android1.contactdetailsdemo.user.ContactList;
 
 import java.util.ArrayList;
@@ -44,6 +45,7 @@ public class MainActivity extends AppCompatActivity {
     public static ContactList contactList = new ContactList();
     private ArrayList<String> nameList = new ArrayList<>();
     private ArrayList<String> mobileList = new ArrayList<>();
+    private CallDetailsFragment callDetailsFragment = new CallDetailsFragment();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,6 +66,12 @@ public class MainActivity extends AppCompatActivity {
                 .allowMainThreadQueries()
                 .build();
 
+        br = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                callDetailsFragment.readFromDb(MainActivity.this);
+            }
+        };
     }
 
     @Override
