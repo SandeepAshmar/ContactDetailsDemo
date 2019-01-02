@@ -82,7 +82,8 @@ public class CallLogAdapter extends RecyclerView.Adapter<CallLogAdapter.ViewHold
         }
 
         if (number == numberSearch) {
-            title = finalNumber;
+            Intent intent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + finalNumber));
+            context.startActivity(intent);
         } else {
             PopupMenu popupMenu = new PopupMenu(context, holder.itemView);
             popupMenu.getMenu().add("Add Contact");
