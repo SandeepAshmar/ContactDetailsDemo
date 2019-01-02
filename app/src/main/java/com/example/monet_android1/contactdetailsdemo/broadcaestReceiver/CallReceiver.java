@@ -1,10 +1,13 @@
 package com.example.monet_android1.contactdetailsdemo.broadcaestReceiver;
 
+import android.arch.persistence.room.Room;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.telephony.TelephonyManager;
 
+import com.example.monet_android1.contactdetailsdemo.appDatabase.MyCallsAppDatabase;
+import com.example.monet_android1.contactdetailsdemo.appDatabase.MyContactAppDatabase;
 import com.example.monet_android1.contactdetailsdemo.user.CallLog;
 import com.example.monet_android1.contactdetailsdemo.user.Contacts;
 
@@ -21,6 +24,8 @@ public class CallReceiver extends BroadcastReceiver {
     private static Date callStartTime;
     private static boolean isIncoming;
     private static String savedNumber;
+    public static MyContactAppDatabase myContactAppDatabase;
+    public static MyCallsAppDatabase myCallsAppDatabase;
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -101,6 +106,14 @@ public class CallReceiver extends BroadcastReceiver {
     }
 
     protected void saveData(Context ctx, String number, Intent intent, String callType) {
+        myContactAppDatabase = Room.databaseBuilder(ctx, MyContactAppDatabase.class, "contactdb")
+                .allowMainThreadQueries()
+                .build();
+
+        myCallsAppDatabase = Room.databaseBuilder(ctx, MyCallsAppDatabase.class, "calldb")
+                .allowMainThreadQueries()
+                .build();
+
         number = intent.getExtras().getString(TelephonyManager.EXTRA_INCOMING_NUMBER);
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss aaa");
         String dateString = dateFormat.format(new Date(System.currentTimeMillis()));

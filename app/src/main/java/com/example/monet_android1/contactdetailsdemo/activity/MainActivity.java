@@ -88,7 +88,9 @@ public class MainActivity extends AppCompatActivity {
     private boolean checkPhoneStatePermission() {
         int result = ContextCompat.checkSelfPermission(this,
                 Manifest.permission.READ_PHONE_STATE) + ContextCompat.checkSelfPermission(this,
-                Manifest.permission.CALL_PHONE);
+                Manifest.permission.CALL_PHONE) + ContextCompat.checkSelfPermission(this,
+                Manifest.permission.READ_CONTACTS) + ContextCompat.checkSelfPermission(this,
+                Manifest.permission.WRITE_CONTACTS);
         if (result == PackageManager.PERMISSION_GRANTED) {
             return true;
         } else {
@@ -114,7 +116,9 @@ public class MainActivity extends AppCompatActivity {
             });
             alertDialog.show();
         } else {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_PHONE_STATE, Manifest.permission.CALL_PHONE}, 1012);
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_PHONE_STATE,
+                    Manifest.permission.CALL_PHONE, Manifest.permission.READ_CONTACTS,
+                    Manifest.permission.WRITE_CONTACTS}, 1012);
         }
     }
 
@@ -135,7 +139,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
             alertDialog.show();
-        }else{
+        } else {
 
         }
 

@@ -59,14 +59,14 @@ public class AddContactFragment extends Fragment {
                 String userMobile = usr.getMobile();
                 if (number.equals(userMobile)) {
                     isMatched = true;
+                }else{
+                    isMatched = false;
                 }
             }
 
             if(isMatched){
                 Toast.makeText(getActivity(), "Contact number already exist", Toast.LENGTH_SHORT).show();
             }else{
-
-
                 Contacts contacts = new Contacts();
                 contacts.setName(name.getText().toString());
                 contacts.setMobile(mobile.getText().toString());
