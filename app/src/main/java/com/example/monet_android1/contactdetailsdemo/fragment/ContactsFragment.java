@@ -2,7 +2,6 @@ package com.example.monet_android1.contactdetailsdemo.fragment;
 
 
 import android.content.Context;
-import android.graphics.ColorSpace;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -12,25 +11,14 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
 import android.widget.EditText;
-import android.widget.ListAdapter;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.monet_android1.contactdetailsdemo.R;
 import com.example.monet_android1.contactdetailsdemo.adapter.ContactsAdapter;
-import com.example.monet_android1.contactdetailsdemo.user.CallLog;
-import com.example.monet_android1.contactdetailsdemo.user.Contacts;
+import com.example.monet_android1.contactdetailsdemo.user.ContactList;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-
-import static com.example.monet_android1.contactdetailsdemo.activity.MainActivity.myCallsAppDatabase;
-import static com.example.monet_android1.contactdetailsdemo.activity.MainActivity.myContactAppDatabase;
+import static com.example.monet_android1.contactdetailsdemo.activity.MainActivity.contactList;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -40,7 +28,6 @@ public class ContactsFragment extends Fragment {
     private static TextView tv_noContact;
     private static RecyclerView recyclerView;
     private LinearLayoutManager layoutManager;
-    private static List<Contacts> contactsList;
     private static ContactsAdapter contactsAdapter;
     private EditText search;
 
@@ -83,18 +70,19 @@ public class ContactsFragment extends Fragment {
     }
 
     void filter(String text) {
-        ArrayList<Contacts> temp = new ArrayList();
-        for (Contacts d : contactsList) {
-            if (d.getName().toLowerCase().contains(text.toLowerCase())) {
-                temp.add(d);
+       ContactList temp = new ContactList();
+        for (int i = 0; i < contactList.getName().size() ; i++) {
+            if (contactList.getName().get(i).toLowerCase().contains(text.toLowerCase())) {
+                temp.setName(contactList.getName().get(i));
+                temp.setMobile(contactList.getMobile().get(i));
             }
         }
 
         updateList(temp, text);
     }
 
-    public void updateList(ArrayList<Contacts> list, String text) {
-        if(list.size() > 0){
+    public void updateList(ContactList list, String text) {
+        if(list.getName().size() > 0){
             recyclerView.setVisibility(View.VISIBLE);
             tv_noContact.setVisibility(View.GONE);
             contactsAdapter = new ContactsAdapter(getActivity(), list);
@@ -110,17 +98,10 @@ public class ContactsFragment extends Fragment {
 
     public static void readFromDb(Context context) {
 
-        contactsList = myContactAppDatabase.myContactDao().getContactUsers();
-        Collections.sort(contactsList, new Comparator<Contacts>() {
-            @Override
-            public int compare(Contacts lhs, Contacts rhs) {
-                return lhs.getName().compareTo(rhs.getName());
-            }
-        });
-        contactsAdapter = new ContactsAdapter(context, contactsList);
+        contactsAdapter = new ContactsAdapter(context, contactList);
         recyclerView.setAdapter(contactsAdapter);
         contactsAdapter.notifyDataSetChanged();
-        if(contactsList.size()>0){
+        if(contactList.getName().size()>0){
             recyclerView.setVisibility(View.VISIBLE);
             tv_noContact.setVisibility(View.GONE);
         }else{

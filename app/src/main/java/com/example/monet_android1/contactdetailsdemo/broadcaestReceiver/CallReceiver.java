@@ -7,16 +7,10 @@ import android.content.Intent;
 import android.telephony.TelephonyManager;
 
 import com.example.monet_android1.contactdetailsdemo.appDatabase.MyCallsAppDatabase;
-import com.example.monet_android1.contactdetailsdemo.appDatabase.MyContactAppDatabase;
 import com.example.monet_android1.contactdetailsdemo.user.CallLog;
-import com.example.monet_android1.contactdetailsdemo.user.Contacts;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
-
-import static com.example.monet_android1.contactdetailsdemo.activity.MainActivity.myCallsAppDatabase;
-import static com.example.monet_android1.contactdetailsdemo.activity.MainActivity.myContactAppDatabase;
 
 public class CallReceiver extends BroadcastReceiver {
 
@@ -24,7 +18,6 @@ public class CallReceiver extends BroadcastReceiver {
     private static Date callStartTime;
     private static boolean isIncoming;
     private static String savedNumber;
-    public static MyContactAppDatabase myContactAppDatabase;
     public static MyCallsAppDatabase myCallsAppDatabase;
 
     @Override
@@ -106,9 +99,6 @@ public class CallReceiver extends BroadcastReceiver {
     }
 
     protected void saveData(Context ctx, String number, Intent intent, String callType) {
-        myContactAppDatabase = Room.databaseBuilder(ctx, MyContactAppDatabase.class, "contactdb")
-                .allowMainThreadQueries()
-                .build();
 
         myCallsAppDatabase = Room.databaseBuilder(ctx, MyCallsAppDatabase.class, "calldb")
                 .allowMainThreadQueries()

@@ -8,8 +8,10 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Color;
 import android.net.Uri;
+import android.provider.ContactsContract;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
@@ -19,16 +21,15 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 
 import com.example.monet_android1.contactdetailsdemo.R;
 import com.example.monet_android1.contactdetailsdemo.adapter.ViewPagerAdapter;
 import com.example.monet_android1.contactdetailsdemo.appDatabase.MyCallsAppDatabase;
-import com.example.monet_android1.contactdetailsdemo.appDatabase.MyContactAppDatabase;
-import com.example.monet_android1.contactdetailsdemo.dao.MyCallDao;
-import com.example.monet_android1.contactdetailsdemo.fragment.AddContactFragment;
 import com.example.monet_android1.contactdetailsdemo.fragment.CallDetailsFragment;
 import com.example.monet_android1.contactdetailsdemo.fragment.ContactsFragment;
+import com.example.monet_android1.contactdetailsdemo.user.ContactList;
+
+import java.util.ArrayList;
 
 import static com.example.monet_android1.contactdetailsdemo.fragment.CallDetailsFragment.readFromDb;
 
@@ -37,9 +38,11 @@ public class MainActivity extends AppCompatActivity {
     private TabLayout tabLayout;
     private ViewPager viewPager;
     private ViewPagerAdapter adapter;
-    public static MyContactAppDatabase myContactAppDatabase;
     public static MyCallsAppDatabase myCallsAppDatabase;
     private BroadcastReceiver br;
+    public static ContactList contactList = new ContactList();
+    private ArrayList<String> nameList = new ArrayList<>();
+    private ArrayList<String> mobileList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,14 +55,9 @@ public class MainActivity extends AppCompatActivity {
         adapter = new ViewPagerAdapter(getSupportFragmentManager());
         adapter.addFragment(new CallDetailsFragment(), "Call log");
         adapter.addFragment(new ContactsFragment(), "Contacts");
-        adapter.addFragment(new AddContactFragment(), "Add");
         viewPager.setAdapter(adapter);
         tabLayout.setupWithViewPager(viewPager);
         tabLayout.setSelectedTabIndicatorColor(Color.parseColor("#000000"));
-
-        myContactAppDatabase = Room.databaseBuilder(this, MyContactAppDatabase.class, "contactdb")
-                .allowMainThreadQueries()
-                .build();
 
         myCallsAppDatabase = Room.databaseBuilder(this, MyCallsAppDatabase.class, "calldb")
                 .allowMainThreadQueries()
@@ -78,11 +76,34 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         if (checkPhoneStatePermission()) {
-            Log.e("Tag", "Phone state Permission is allowed");
+            getContactList();
         } else {
             requestPhoneStatePermission();
         }
         registerReceiver(br, new IntentFilter("CallApp"));
+    }
+
+    private void getContactList(){
+        contactList.getName().clear();
+        contactList.getMobile().clear();
+        Cursor phones = getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null, null, null);
+        while (phones.moveToNext()) {
+            String name = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
+            String phoneNumber = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+            phoneNumber = phoneNumber.replace(" ", "");
+            phoneNumber = phoneNumber.replace("-", "");
+            nameList.add(name);
+            mobileList.add(phoneNumber);
+        }
+        for (int i = 0; i < nameList.size(); i++) {
+            if (!contactList.getMobile().contains(mobileList.get(i))){
+                contactList.setName(nameList.get(i));
+                contactList.setMobile(mobileList.get(i));
+            }
+        }
+        phones.close();
+        nameList.clear();
+        mobileList.clear();
     }
 
     private boolean checkPhoneStatePermission() {

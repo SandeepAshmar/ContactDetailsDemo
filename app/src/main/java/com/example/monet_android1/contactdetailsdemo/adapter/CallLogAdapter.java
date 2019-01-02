@@ -18,20 +18,16 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.monet_android1.contactdetailsdemo.R;
-import com.example.monet_android1.contactdetailsdemo.fragment.CallDetailsFragment;
-import com.example.monet_android1.contactdetailsdemo.fragment.ContactsFragment;
 import com.example.monet_android1.contactdetailsdemo.user.CallLog;
-import com.example.monet_android1.contactdetailsdemo.user.Contacts;
 
 import java.util.List;
 
-import static com.example.monet_android1.contactdetailsdemo.activity.MainActivity.myContactAppDatabase;
+import static com.example.monet_android1.contactdetailsdemo.activity.MainActivity.contactList;
 
 public class CallLogAdapter extends RecyclerView.Adapter<CallLogAdapter.ViewHolder> {
 
     private Context context;
     private List<CallLog> callLogs;
-    private List<Contacts> contacts = myContactAppDatabase.myContactDao().getContactUsers();
 
     public CallLogAdapter(Context context, List<CallLog> callLogs) {
         this.context = context;
@@ -74,8 +70,8 @@ public class CallLogAdapter extends RecyclerView.Adapter<CallLogAdapter.ViewHold
         String numberSearch = "";
         number = number.replace("+91", "");
         final String finalNumber = number;
-        for (int i = 0; i < contacts.size(); i++) {
-            if(contacts.get(i).getMobile().equals(number)){
+        for (int i = 0; i < contactList.getMobile().size(); i++) {
+            if(contactList.getMobile().get(i).contains(number)){
                 numberSearch = number;
             }
         }
@@ -130,22 +126,7 @@ public class CallLogAdapter extends RecyclerView.Adapter<CallLogAdapter.ViewHold
         update.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(name.getText().toString().isEmpty()){
-                    Toast.makeText(context, "Please enter name", Toast.LENGTH_SHORT).show();
-                }else if(mobile.getText().toString().isEmpty()){
-                    Toast.makeText(context, "Please enter mobile number", Toast.LENGTH_SHORT).show();
-                }else if(mobile.getText().length() < 10){
-                    Toast.makeText(context, "Please enter 10 digit mobile number", Toast.LENGTH_SHORT).show();
-                }else{
-                    Contacts contacts = new Contacts();
-                    contacts.setName(name.getText().toString());
-                    contacts.setMobile(mobile.getText().toString());
-                    myContactAppDatabase.myContactDao().addContactUser(contacts);
-                    Toast.makeText(context, "contact saved successfully", Toast.LENGTH_SHORT).show();
-                    CallDetailsFragment.readFromDb(context);
-                    ContactsFragment.readFromDb(context);
-                    dialog.dismiss();
-                }
+
             }
         });
 
@@ -183,13 +164,22 @@ public class CallLogAdapter extends RecyclerView.Adapter<CallLogAdapter.ViewHold
     protected void getName(String number, ViewHolder holder, int position) {
 
         String name = "";
+        String numberSearch = "";
         number = number.replace("+91", "");
-        for (Contacts usr : contacts) {
-            String userMobile = usr.getMobile();
-            if (number.equals(userMobile)) {
-                name = usr.getName();
+
+        for (int i = 0; i < contactList.getMobile().size(); i++) {
+            String mobile = contactList.getMobile().get(i);
+            if(mobile.contains(number)){
+                name = contactList.getName().get(i);
             }
         }
+
+//        for (Contacts usr : contacts) {
+//            String userMobile = usr.getMobile();
+//            if (number.equals(userMobile)) {
+//                name = usr.getName();
+//            }
+//        }
 
         if (name.isEmpty()) {
             holder.mobile.setText(callLogs.get(position).getMobile());
