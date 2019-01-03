@@ -60,6 +60,22 @@ public class MainActivity extends AppCompatActivity {
         adapter.addFragment(new ContactsFragment(), "Contacts");
         viewPager.setAdapter(adapter);
         tabLayout.setupWithViewPager(viewPager);
+        viewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int i, float v, int i1) {
+
+            }
+
+            @Override
+            public void onPageSelected(int i) {
+                Toast.makeText(MainActivity.this, ""+i, Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int i) {
+
+            }
+        });
         tabLayout.setSelectedTabIndicatorColor(Color.parseColor("#000000"));
 
         myCallsAppDatabase = Room.databaseBuilder(this, MyCallsAppDatabase.class, "calldb")

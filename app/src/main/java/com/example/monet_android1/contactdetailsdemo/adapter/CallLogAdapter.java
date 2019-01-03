@@ -126,7 +126,6 @@ public class CallLogAdapter extends RecyclerView.Adapter<CallLogAdapter.ViewHold
     protected void getName(String number, ViewHolder holder, int position) {
 
         String name = "";
-        String numberSearch = "";
         number = number.replace("+91", "");
 
         for (int i = 0; i < contactList.getMobile().size(); i++) {
@@ -135,13 +134,6 @@ public class CallLogAdapter extends RecyclerView.Adapter<CallLogAdapter.ViewHold
                 name = contactList.getName().get(i);
             }
         }
-
-//        for (Contacts usr : contacts) {
-//            String userMobile = usr.getMobile();
-//            if (number.equals(userMobile)) {
-//                name = usr.getName();
-//            }
-//        }
 
         if (name.isEmpty()) {
             holder.mobile.setText(callLogs.get(position).getMobile());
