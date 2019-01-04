@@ -69,9 +69,17 @@ public class CallLogAdapter extends RecyclerView.Adapter<CallLogAdapter.ViewHold
     private String showPopup(String number, final int position, final ViewHolder holder) {
         String numberSearch = "";
         number = number.replace("+91", "");
+        number = number.replace("(", "");
+        number = number.replace(")", "");
+        number = number.replace("-", "");
         final String finalNumber = number;
         for (int i = 0; i < contactList.getMobile().size(); i++) {
-            if(contactList.getMobile().get(i).contains(number)){
+            String searchNmber = contactList.getMobile().get(i);
+            searchNmber = searchNmber.replace("+91", "");
+            searchNmber = searchNmber.replace("(", "");
+            searchNmber = searchNmber.replace(")", "");
+            searchNmber = searchNmber.replace("-", "");
+            if(searchNmber.equals(number)){
                 numberSearch = number;
             }
         }
@@ -127,10 +135,17 @@ public class CallLogAdapter extends RecyclerView.Adapter<CallLogAdapter.ViewHold
 
         String name = "";
         number = number.replace("+91", "");
-
+        number = number.replace("+91", "");
+        number = number.replace("(", "");
+        number = number.replace(")", "");
+        number = number.replace("-", "");
         for (int i = 0; i < contactList.getMobile().size(); i++) {
             String mobile = contactList.getMobile().get(i);
-            if(mobile.contains(number)){
+            mobile = mobile.replace("+91", "");
+            mobile = mobile.replace("(", "");
+            mobile = mobile.replace(")", "");
+            mobile = mobile.replace("-", "");
+            if(mobile.equals(number)){
                 name = contactList.getName().get(i);
             }
         }

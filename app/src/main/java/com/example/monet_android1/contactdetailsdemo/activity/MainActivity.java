@@ -33,6 +33,8 @@ import com.example.monet_android1.contactdetailsdemo.user.CallLog;
 import com.example.monet_android1.contactdetailsdemo.user.ContactList;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -68,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onPageSelected(int i) {
-                Toast.makeText(MainActivity.this, ""+i, Toast.LENGTH_SHORT).show();
+//                Toast.makeText(MainActivity.this, "" + i, Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -111,14 +113,25 @@ public class MainActivity extends AppCompatActivity {
             phoneNumber = phoneNumber.replace(" ", "");
             phoneNumber = phoneNumber.replace("-", "");
             nameList.add(name);
+            contactList.setName(name);
             mobileList.add(phoneNumber);
         }
-        for (int i = 0; i < nameList.size(); i++) {
-            if (!contactList.getMobile().contains(mobileList.get(i))) {
-                contactList.setName(nameList.get(i));
-                contactList.setMobile(mobileList.get(i));
+        HashSet<String> nameHashSet = new HashSet<String>();
+        nameHashSet.addAll(contactList.getName());
+        contactList.getName().clear();
+        contactList.getName().addAll(nameHashSet);
+        Collections.sort(contactList.getName(), String.CASE_INSENSITIVE_ORDER);
+
+        for (int i = 0; i < contactList.getName().size(); i++) {
+            String name = contactList.getName().get(i);
+            for (int j = 0; j < nameList.size(); j++) {
+                if(nameList.get(j).equals(name)){
+                    contactList.setMobile(mobileList.get(j));
+                    break;
+                }
             }
         }
+
         phones.close();
         nameList.clear();
         mobileList.clear();

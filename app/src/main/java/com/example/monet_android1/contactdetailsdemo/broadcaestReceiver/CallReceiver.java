@@ -108,7 +108,12 @@ public class CallReceiver extends BroadcastReceiver {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss aaa");
         String dateString = dateFormat.format(new Date(System.currentTimeMillis()));
         CallLog callLog = new CallLog();
-        callLog.setMobile(number);
+        if(number == null){
+            callLog.setMobile("112");
+        }else{
+            callLog.setMobile(number);
+        }
+
         callLog.setCallType(callType);
         callLog.setTime(dateString);
         myCallsAppDatabase.myCallDao().addCallDetails(callLog);
