@@ -6,20 +6,25 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.PopupMenu;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.monet_android1.contactdetailsdemo.R;
 import com.example.monet_android1.contactdetailsdemo.click.CallClickListner;
+import com.example.monet_android1.contactdetailsdemo.fragment.CallDetailsFragment;
 import com.example.monet_android1.contactdetailsdemo.user.CallLog;
 
 import java.util.List;
 
+import static android.content.ContentValues.TAG;
 import static com.example.monet_android1.contactdetailsdemo.activity.MainActivity.contactList;
+import static com.example.monet_android1.contactdetailsdemo.activity.MainActivity.myCallsAppDatabase;
 
 public class CallLogAdapter extends RecyclerView.Adapter<CallLogAdapter.ViewHolder> {
 
@@ -27,6 +32,9 @@ public class CallLogAdapter extends RecyclerView.Adapter<CallLogAdapter.ViewHold
     private List<CallLog> callLogs;
     private String title = "";
     private CallClickListner callClickListner;
+    private int i = 0;
+    private CallLog callLog = new CallLog();
+    private CallDetailsFragment callDetailsFragment = new CallDetailsFragment();
 
     public CallLogAdapter(Context context, List<CallLog> callLogs, CallClickListner callClickListner) {
         this.context = context;
@@ -61,7 +69,20 @@ public class CallLogAdapter extends RecyclerView.Adapter<CallLogAdapter.ViewHold
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showPopup(callLogs.get(position).getMobile(), position, holder);
+                i = i + 1;
+                v.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (i == 1) {
+                            showPopup(callLogs.get(position).getMobile(), position, holder);
+                        } else if (i >= 3) {
+                            callLog.setId(callLogs.get(position).getId());
+                            myCallsAppDatabase.myCallDao().deleteEntry(callLog);
+                            callDetailsFragment.readFromDb(context);
+                        }
+                        i = 0;
+                    }
+                }, 500);
             }
         });
     }
@@ -69,17 +90,11 @@ public class CallLogAdapter extends RecyclerView.Adapter<CallLogAdapter.ViewHold
     private String showPopup(String number, final int position, final ViewHolder holder) {
         String numberSearch = "";
         number = number.replace("+91", "");
-        number = number.replace("(", "");
-        number = number.replace(")", "");
-        number = number.replace("-", "");
         final String finalNumber = number;
         for (int i = 0; i < contactList.getMobile().size(); i++) {
             String searchNmber = contactList.getMobile().get(i);
             searchNmber = searchNmber.replace("+91", "");
-            searchNmber = searchNmber.replace("(", "");
-            searchNmber = searchNmber.replace(")", "");
-            searchNmber = searchNmber.replace("-", "");
-            if(searchNmber.equals(number)){
+            if (searchNmber.contains(number)) {
                 numberSearch = number;
             }
         }
@@ -135,17 +150,9 @@ public class CallLogAdapter extends RecyclerView.Adapter<CallLogAdapter.ViewHold
 
         String name = "";
         number = number.replace("+91", "");
-        number = number.replace("+91", "");
-        number = number.replace("(", "");
-        number = number.replace(")", "");
-        number = number.replace("-", "");
         for (int i = 0; i < contactList.getMobile().size(); i++) {
             String mobile = contactList.getMobile().get(i);
-            mobile = mobile.replace("+91", "");
-            mobile = mobile.replace("(", "");
-            mobile = mobile.replace(")", "");
-            mobile = mobile.replace("-", "");
-            if(mobile.equals(number)){
+            if (mobile.contains(number)) {
                 name = contactList.getName().get(i);
             }
         }

@@ -1,9 +1,12 @@
 package com.example.monet_android1.contactdetailsdemo.adapter;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -18,12 +21,14 @@ import android.widget.Toast;
 import com.example.monet_android1.contactdetailsdemo.R;
 import com.example.monet_android1.contactdetailsdemo.user.ContactList;
 
+import java.util.Random;
+
 public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.ViewHolder> {
 
     private Context context;
     private PopupMenu popup;
     private ContactList list;
-    private int i = 0;
+    private String lastAlpha = "A";
 
     public ContactsAdapter(Context context, ContactList list) {
         this.context = context;
@@ -40,9 +45,11 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.ViewHo
 
     @Override
     public void onBindViewHolder(@NonNull final ContactsAdapter.ViewHolder holder, final int position) {
-        i = position+1;
-        holder.id.setText(String.valueOf(i));
+
+        generateRandomNumber(holder);
         holder.name.setText(list.getName().get(position));
+        String text = String.valueOf(holder.name.getText().charAt(0));
+        holder.id.setText(text.toUpperCase());
         holder.mobile.setText(list.getMobile().get(position));
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
@@ -53,12 +60,11 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.ViewHo
                     Intent callIntent = new Intent(Intent.ACTION_CALL);
                     callIntent.setData(Uri.parse("tel:" + list.getMobile().get(position)));
                     context.startActivity(callIntent);
-                }else{
+                } else {
                     Toast.makeText(context, "You don't assign permission.", Toast.LENGTH_SHORT).show();
                 }
             }
         });
-
     }
 
     @Override
@@ -77,5 +83,18 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.ViewHo
             name = itemView.findViewById(R.id.tv_contactName);
             mobile = itemView.findViewById(R.id.tv_contactMobile);
         }
+    }
+
+    @SuppressLint("NewApi")
+    private void generateRandomNumber(ViewHolder holder) {
+        Random r = new Random();
+        int red = r.nextInt(150 - 0 + 1) + 1;
+        int green = r.nextInt(150 - 0 + 1) + 1;
+        int blue = r.nextInt(150 - 0 + 1) + 1;
+
+        GradientDrawable draw = new GradientDrawable();
+        draw.setShape(GradientDrawable.OVAL);
+        draw.setColor(Color.rgb(red, green, blue));
+        holder.id.setBackground(draw);
     }
 }

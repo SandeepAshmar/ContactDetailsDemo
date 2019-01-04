@@ -1,6 +1,7 @@
 package com.example.monet_android1.contactdetailsdemo.dao;
 
 import android.arch.persistence.room.Dao;
+import android.arch.persistence.room.Delete;
 import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.Query;
 
@@ -17,4 +18,7 @@ public interface MyCallDao {
 
     @Query("select * from calls")
     public List<CallLog> getCallDetials();
+
+    @Delete
+    public void deleteEntry(CallLog callLog);
 }
