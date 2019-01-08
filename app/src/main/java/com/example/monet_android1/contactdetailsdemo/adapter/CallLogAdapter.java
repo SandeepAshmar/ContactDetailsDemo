@@ -1,9 +1,14 @@
 package com.example.monet_android1.contactdetailsdemo.adapter;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
+import android.os.Build;
+import android.provider.Telephony;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -11,16 +16,21 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.monet_android1.contactdetailsdemo.R;
+import com.example.monet_android1.contactdetailsdemo.activity.CallDetailsActivity;
 import com.example.monet_android1.contactdetailsdemo.click.CallClickListner;
 import com.example.monet_android1.contactdetailsdemo.fragment.CallDetailsFragment;
+import com.example.monet_android1.contactdetailsdemo.user.CallDetails;
 import com.example.monet_android1.contactdetailsdemo.user.CallLog;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import static android.content.ContentValues.TAG;
 import static com.example.monet_android1.contactdetailsdemo.activity.MainActivity.contactList;
@@ -29,16 +39,14 @@ import static com.example.monet_android1.contactdetailsdemo.activity.MainActivit
 public class CallLogAdapter extends RecyclerView.Adapter<CallLogAdapter.ViewHolder> {
 
     private Context context;
-    private List<CallLog> callLogs;
+    private CallDetails callDetails;
     private String title = "";
     private CallClickListner callClickListner;
-    private int i = 0;
-    private CallLog callLog = new CallLog();
-    private CallDetailsFragment callDetailsFragment = new CallDetailsFragment();
+    private ArrayList<String> colorList = new ArrayList<>();
 
-    public CallLogAdapter(Context context, List<CallLog> callLogs, CallClickListner callClickListner) {
+    public CallLogAdapter(Context context, CallDetails callDetails, CallClickListner callClickListner) {
         this.context = context;
-        this.callLogs = callLogs;
+        this.callDetails = callDetails;
         this.callClickListner = callClickListner;
     }
 
@@ -53,116 +61,121 @@ public class CallLogAdapter extends RecyclerView.Adapter<CallLogAdapter.ViewHold
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder holder, final int position) {
 
-        holder.id.setText(Integer.toString(callLogs.get(position).getId()));
-        holder.date.setText(callLogs.get(position).getTime());
-        holder.callType.setText(callLogs.get(position).getCallType());
-
-        getName(callLogs.get(position).getMobile(), holder, position);
-
-        if (callLogs.get(position).getCallType().equals("Incoming Call")
-                || callLogs.get(position).getCallType().equals("Outgoing Call")) {
-            holder.callType.setTextColor(Color.parseColor("#047b04"));
+        generateRandomNumber(holder);
+        if (callDetails.getName().get(position).isEmpty()) {
+            holder.name.setText(callDetails.getMobile().get(position));
+            holder.firstLetter.setText("Add");
         } else {
-            holder.callType.setTextColor(Color.parseColor("#cc0505"));
+            holder.name.setText(callDetails.getName().get(position));
+            String text = String.valueOf(holder.name.getText().charAt(0));
+            holder.firstLetter.setText(text.toUpperCase());
         }
 
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
+        holder.more.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                i = i + 1;
-                v.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (i == 1) {
-                            showPopup(callLogs.get(position).getMobile(), position, holder);
-                        } else if (i >= 3) {
-                            callLog.setId(callLogs.get(position).getId());
-                            myCallsAppDatabase.myCallDao().deleteEntry(callLog);
-                            callDetailsFragment.readFromDb(context);
-                        }
-                        i = 0;
-                    }
-                }, 500);
+                showPopup(callDetails.getMobile().get(position),
+                        callDetails.getName().get(position), position, holder);
             }
         });
+
+
     }
 
-    private String showPopup(String number, final int position, final ViewHolder holder) {
-        String numberSearch = "";
-        number = number.replace("+91", "");
-        final String finalNumber = number;
-        for (int i = 0; i < contactList.getMobile().size(); i++) {
-            String searchNmber = contactList.getMobile().get(i);
-            searchNmber = searchNmber.replace("+91", "");
-            if (searchNmber.contains(number)) {
-                numberSearch = number;
-            }
+    private String showPopup(final String number, final String name, final int position, final ViewHolder holder) {
+        PopupMenu popupMenu = new PopupMenu(context, holder.more);
+        if (name.isEmpty()) {
+            popupMenu.getMenu().add("Add to contact");
+        }else{
+            popupMenu.getMenu().add("Send message");
         }
+        popupMenu.getMenu().add("Call Details");
+        popupMenu.getMenu().add("Call");
+        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
 
-        if (number == numberSearch) {
-            Intent intent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + finalNumber));
-            context.startActivity(intent);
-        } else {
-            PopupMenu popupMenu = new PopupMenu(context, holder.itemView);
-            popupMenu.getMenu().add("Add Contact");
-            popupMenu.getMenu().add("Call");
-
-            popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                @Override
-                public boolean onMenuItemClick(MenuItem item) {
-
-                    if (item.getTitle().equals("Add Contact")) {
-                        callClickListner.onItemClick(callLogs.get(position).getMobile());
-                    } else {
-                        Intent intent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + finalNumber));
-                        context.startActivity(intent);
-                    }
-
-                    return true;
+                if (item.getTitle().equals("Add to contact")) {
+                    callClickListner.onItemClick(callDetails.getMobile().get(position));
+                } else if (item.getTitle().equals("Call")) {
+                    Intent intent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + number));
+                    context.startActivity(intent);
+                }else if (item.getTitle().equals("Send message")) {
+                    sendSMS(number);
+                }else {
+                    Intent intent = new Intent(context, CallDetailsActivity.class);
+                    intent.putExtra("mobile", number);
+                    intent.putExtra("name", name);
+                    intent.putExtra("color", colorList.get(position));
+                    context.startActivity(intent);
                 }
-            });
-            popupMenu.show();
-        }
+
+                return true;
+            }
+        });
+        popupMenu.show();
         return title;
     }
 
     @Override
     public int getItemCount() {
-        return callLogs.size();
+        return callDetails.getMobile().size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
 
-        TextView mobile, date, id, callType;
+        TextView name, firstLetter;
+        ImageView more;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
 
-            id = itemView.findViewById(R.id.tv_callsNumberId);
-            mobile = itemView.findViewById(R.id.tv_callsMobileNumber);
-            date = itemView.findViewById(R.id.tv_callsDate);
-            callType = itemView.findViewById(R.id.tv_callType);
+            name = itemView.findViewById(R.id.tv_nameItem);
+            firstLetter = itemView.findViewById(R.id.tv_firstLetter);
+            more = itemView.findViewById(R.id.img_menu);
 
         }
     }
 
-    protected void getName(String number, ViewHolder holder, int position) {
+    @SuppressLint("NewApi")
+    private void generateRandomNumber(ViewHolder holder) {
+        Random r = new Random();
+        int red = r.nextInt(150 - 0 + 1) + 1;
+        int green = r.nextInt(150 - 0 + 1) + 1;
+        int blue = r.nextInt(150 - 0 + 1) + 1;
 
-        String name = "";
-        number = number.replace("+91", "");
-        for (int i = 0; i < contactList.getMobile().size(); i++) {
-            String mobile = contactList.getMobile().get(i);
-            if (mobile.contains(number)) {
-                name = contactList.getName().get(i);
+        GradientDrawable draw = new GradientDrawable();
+        draw.setShape(GradientDrawable.RECTANGLE);
+        draw.setColor(Color.rgb(red, green, blue));
+        holder.firstLetter.setBackground(draw);
+        String color =  String.format("#%02x%02x%02x", red, green, blue);
+        color = color.replace("android.graphics.drawable.GradientDrawable@", "");
+        colorList.add(color);
+    }
+
+    private void sendSMS(String mobile) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) // At least KitKat
+        {
+            String defaultSmsPackageName = Telephony.Sms.getDefaultSmsPackage(context); // Need to change the build to API 19
+
+            Intent sendIntent = new Intent(Intent.ACTION_SEND);
+            sendIntent.putExtra("address",mobile);
+            sendIntent.setType("text/plain");
+
+            if (defaultSmsPackageName != null)// Can be null in case that there is no default, then the user would be able to choose
+            // any app that support this intent.
+            {
+                sendIntent.setPackage(defaultSmsPackageName);
             }
-        }
+            context.startActivity(sendIntent);
 
-        if (name.isEmpty()) {
-            holder.mobile.setText(callLogs.get(position).getMobile());
-        } else {
-            holder.mobile.setText(name);
-            name = "";
         }
-
+        else // For early versions, do what worked for you before.
+        {
+            Intent smsIntent = new Intent(android.content.Intent.ACTION_VIEW);
+            smsIntent.setType("vnd.android-dir/mms-sms");
+            smsIntent.putExtra("address",mobile);
+            context.startActivity(smsIntent);
+        }
     }
 }

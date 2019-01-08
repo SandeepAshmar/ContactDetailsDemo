@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.telecom.Call;
@@ -21,10 +22,14 @@ import com.example.monet_android1.contactdetailsdemo.R;
 import com.example.monet_android1.contactdetailsdemo.activity.MainActivity;
 import com.example.monet_android1.contactdetailsdemo.adapter.CallLogAdapter;
 import com.example.monet_android1.contactdetailsdemo.click.CallClickListner;
+import com.example.monet_android1.contactdetailsdemo.user.CallDetails;
 import com.example.monet_android1.contactdetailsdemo.user.CallLog;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
+import static com.example.monet_android1.contactdetailsdemo.activity.MainActivity.contactList;
 import static com.example.monet_android1.contactdetailsdemo.activity.MainActivity.myCallsAppDatabase;
 
 /**
@@ -33,10 +38,11 @@ import static com.example.monet_android1.contactdetailsdemo.activity.MainActivit
 public class CallDetailsFragment extends Fragment {
 
     private static RecyclerView rv_calls;
-    private LinearLayoutManager layoutManager;
+    private GridLayoutManager layoutManager;
     private static CallLogAdapter adapter;
     private static TextView tv_noCalls;
-    private BroadcastReceiver br;
+    private boolean isReverse = true;
+    private CallDetails callDetails = new CallDetails();
 
     private CallClickListner callClickListner = new CallClickListner() {
         @Override
@@ -53,7 +59,7 @@ public class CallDetailsFragment extends Fragment {
 
         rv_calls = view.findViewById(R.id.rv_calls);
         tv_noCalls = view.findViewById(R.id.tv_noCalls);
-        layoutManager = new LinearLayoutManager(getActivity());
+        layoutManager = new GridLayoutManager(getActivity(), 2);
         rv_calls.setLayoutManager(layoutManager);
         readFromDb(getActivity());
 
@@ -61,22 +67,56 @@ public class CallDetailsFragment extends Fragment {
     }
 
     public void readFromDb(Context context) {
-        try{
+        callDetails.getMobile().clear();
+        callDetails.getName().clear();
+        try {
             List<CallLog> callLogs = myCallsAppDatabase.myCallDao().getCallDetials();
-            adapter = new CallLogAdapter(context, callLogs, callClickListner);
+            for (int i = 0; i < callLogs.size(); i++) {
+                String allMobile = callLogs.get(i).getMobile();
+                if (callDetails.getMobile().size() == 0) {
+                    getName(allMobile);
+                    callDetails.setMobile(callLogs.get(i).getMobile());
+                } else {
+                    if (!(callDetails.getMobile().contains(allMobile))) {
+                        getName(allMobile);
+                        callDetails.setMobile(callLogs.get(i).getMobile());
+                    }
+
+                }
+
+            }
+
+            if(isReverse){
+                Collections.reverse(callDetails.getMobile());
+                Collections.reverse(callDetails.getName());
+                isReverse = false;
+            }
+            adapter = new CallLogAdapter(context, callDetails, callClickListner);
             rv_calls.setAdapter(adapter);
             adapter.notifyDataSetChanged();
-            if(callLogs.size()>0){
+            if (callLogs.size() > 0) {
                 rv_calls.setVisibility(View.VISIBLE);
                 tv_noCalls.setVisibility(View.GONE);
-            }else{
+            } else {
                 rv_calls.setVisibility(View.GONE);
                 tv_noCalls.setVisibility(View.VISIBLE);
             }
-        }catch (Exception e){
-            Toast.makeText(context, ""+e.getMessage(), Toast.LENGTH_SHORT).show();
+        } catch (Exception e) {
+            Toast.makeText(context, "" + e.getMessage(), Toast.LENGTH_SHORT).show();
         }
 
+    }
+
+    protected void getName(String number) {
+
+        String name = "";
+        for (int i = 0; i < contactList.getMobile().size(); i++) {
+            String mobile = contactList.getMobile().get(i);
+            if (mobile.contains(number)) {
+                name = contactList.getName().get(i);
+            }
+        }
+        callDetails.setName(name);
     }
 
     public void addNewContact(String number) {
@@ -90,16 +130,6 @@ public class CallDetailsFragment extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
         super.onActivityResult(requestCode, resultCode, intent);
-
-        if (requestCode == 1)
-        {
-            if (resultCode == Activity.RESULT_OK) {
-                Toast.makeText(getActivity(), "Contact added successfully", Toast.LENGTH_SHORT).show();
-            }
-            if (resultCode == Activity.RESULT_CANCELED) {
-                Toast.makeText(getActivity(), "Contact not added", Toast.LENGTH_SHORT).show();
-            }
-        }
     }
 
     @Override

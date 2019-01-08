@@ -3,49 +3,32 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="5dp">
+    android:layout_margin="2dp">
 
     <TextView
-        android:id="@+id/tv_callsNumberId"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="@android:color/black"
-        android:textSize="16sp"/>
-
-    <TextView
-        android:id="@+id/tv_callsMobileNumber"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="15dp"
-        android:textSize="16sp"
-        android:textColor="@android:color/black"
-        android:layout_toRightOf="@id/tv_callsNumberId"/>
-
-    <TextView
-        android:id="@+id/tv_callsDate"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="16sp"
-        android:layout_alignParentEnd="true"
-        android:textColor="@android:color/black"
-        android:layout_alignParentRight="true"
-        android:layout_marginRight="15dp"/>
-
-    <TextView
-        android:id="@+id/tv_callType"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/tv_callsNumberId"
-        android:layout_toRightOf="@id/tv_callsNumberId"
-        android:textSize="16sp"
-        android:layout_marginLeft="15dp"/>
-
-    <View
+        android:id="@+id/tv_firstLetter"
         android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@android:color/darker_gray"
-        android:layout_below="@id/tv_callType"
+        android:layout_height="150dp"
+        android:textSize="30sp"
+        android:gravity="center"
+        android:textColor="#64f2eded"/>
+
+    <TextView
+        android:id="@+id/tv_nameItem"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@android:color/white"
+        android:layout_marginTop="125dp"
+        android:layout_marginLeft="5dp"/>
+
+    <ImageView
+        android:id="@+id/img_menu"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:src="@drawable/ic_more_black_24dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
         android:layout_marginTop="5dp"
-        android:layout_marginBottom="5dp"/>
+        android:elevation="2dp"/>
 
 </RelativeLayout>
