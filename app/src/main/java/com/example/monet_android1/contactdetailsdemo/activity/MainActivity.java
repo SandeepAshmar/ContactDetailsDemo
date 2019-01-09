@@ -1,6 +1,7 @@
 package com.example.monet_android1.contactdetailsdemo.activity;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.arch.persistence.room.Room;
 import android.content.BroadcastReceiver;
@@ -22,7 +23,11 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.CardView;
+import android.telephony.SubscriptionInfo;
+import android.telephony.SubscriptionManager;
 import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 
 import com.example.monet_android1.contactdetailsdemo.R;
@@ -36,6 +41,7 @@ import com.example.monet_android1.contactdetailsdemo.user.ContactList;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -46,9 +52,11 @@ public class MainActivity extends AppCompatActivity {
     public static MyCallsAppDatabase myCallsAppDatabase;
     public static BroadcastReceiver br;
     public static ContactList contactList = new ContactList();
+    public static ArrayList<String> simName = new ArrayList<>();
     private ArrayList<String> nameList = new ArrayList<>();
     private ArrayList<String> mobileList = new ArrayList<>();
     private CallDetailsFragment callDetailsFragment = new CallDetailsFragment();
+    private CardView card_search;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,10 +65,12 @@ public class MainActivity extends AppCompatActivity {
 
         tabLayout = findViewById(R.id.tabLayout);
         viewPager = findViewById(R.id.viewPager);
+        card_search = findViewById(R.id.card_search);
 
         adapter = new ViewPagerAdapter(getSupportFragmentManager());
-        adapter.addFragment(new CallDetailsFragment(), "Call log");
-        adapter.addFragment(new ContactsFragment(), "Contacts");
+        adapter.addFragment(new CallDetailsFragment(), "");
+        adapter.addFragment(new ContactsFragment(), "");
+
         viewPager.setAdapter(adapter);
         tabLayout.setupWithViewPager(viewPager);
         viewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
@@ -78,7 +88,7 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-        tabLayout.setSelectedTabIndicatorColor(Color.parseColor("#000000"));
+        tabLayout.setSelectedTabIndicatorColor(Color.parseColor("#D81B60"));
 
         myCallsAppDatabase = Room.databaseBuilder(this, MyCallsAppDatabase.class, "calldb")
                 .allowMainThreadQueries()
@@ -90,6 +100,20 @@ public class MainActivity extends AppCompatActivity {
                 callDetailsFragment.readFromDb(MainActivity.this);
             }
         };
+
+        card_search.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this, SearchScreen.class));
+            }
+        });
+
+        setupTabIcons();
+    }
+
+    private void setupTabIcons() {
+        tabLayout.getTabAt(0).setIcon(R.drawable.ic_call_detail);
+        tabLayout.getTabAt(1).setIcon(R.drawable.ic_group_24dp);
     }
 
     @Override
@@ -139,15 +163,15 @@ public class MainActivity extends AppCompatActivity {
         for (int i = 0; i < contactList.getMobile().size(); i++) {
             String mobile = contactList.getMobile().get(i);
             for (int j = 0; j < contactList.getMobile().size(); j++) {
-                if(contactList.getMobile().get(j).contains(mobile)){
-                    count = count+1;
-                    if(count >= 2){
+                if (contactList.getMobile().get(j).contains(mobile)) {
+                    count = count + 1;
+                    if (count >= 2) {
                         contactList.getMobile().remove(i);
                         contactList.getName().remove(i);
-                        Log.d("TAG", "getContactList: mobile : "+i);
+                        Log.d("TAG", "getContactList: mobile : " + i);
                         count = 0;
                     }
-                }else {
+                } else {
                     count = 0;
                 }
             }
@@ -156,6 +180,25 @@ public class MainActivity extends AppCompatActivity {
         phones.close();
         nameList.clear();
         mobileList.clear();
+
+        getSimName();
+    }
+
+    @SuppressLint("NewApi")
+    private void getSimName() {
+        simName.clear();
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE)
+                == PackageManager.PERMISSION_GRANTED) {
+            List<SubscriptionInfo> subscriptionInfos = SubscriptionManager.
+                    from(getApplicationContext()).getActiveSubscriptionInfoList();
+            for (int i = 0; i < subscriptionInfos.size(); i++) {
+                SubscriptionInfo lsuSubscriptionInfo = subscriptionInfos.get(i);
+                simName.add(lsuSubscriptionInfo.getNumber()+lsuSubscriptionInfo.getCarrierName());
+//                Log.d("TAG", "getNumber " + lsuSubscriptionInfo.getNumber());
+//                Log.d("TAG", "network name : " + lsuSubscriptionInfo.getCarrierName());
+            }
+        }
+
     }
 
     private boolean checkPhoneStatePermission() {

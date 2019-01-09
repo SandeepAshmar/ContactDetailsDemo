@@ -7,13 +7,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.monet_android1.contactdetailsdemo.R;
-import com.example.monet_android1.contactdetailsdemo.user.CallLog;
 import com.example.monet_android1.contactdetailsdemo.user.UserCallDetails;
-
-import java.util.List;
 
 public class CallDetailsAdapter extends RecyclerView.Adapter<CallDetailsAdapter.ViewHolder> {
 
@@ -35,6 +33,13 @@ public class CallDetailsAdapter extends RecyclerView.Adapter<CallDetailsAdapter.
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+
+        if(callLogs.getMobile().contains("No data")){
+            holder.noData.setVisibility(View.VISIBLE);
+            holder.yesData.setVisibility(View.GONE);
+        }else{
+            holder.noData.setVisibility(View.GONE);
+            holder.yesData.setVisibility(View.VISIBLE);
             holder.mobile.setText(callLogs.getMobile().get(position));
             holder.time.setText(callLogs.getTime().get(position));
 
@@ -45,6 +50,7 @@ public class CallDetailsAdapter extends RecyclerView.Adapter<CallDetailsAdapter.
             }else{
                 holder.type.setBackgroundResource(R.drawable.ic_outgoing_call_24dp);
             }
+        }
     }
 
     @Override
@@ -54,8 +60,9 @@ public class CallDetailsAdapter extends RecyclerView.Adapter<CallDetailsAdapter.
 
     public class ViewHolder extends RecyclerView.ViewHolder {
 
-        TextView mobile, time;
+        TextView mobile, time, noData;
         ImageView type;
+        LinearLayout yesData;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -63,6 +70,8 @@ public class CallDetailsAdapter extends RecyclerView.Adapter<CallDetailsAdapter.
             mobile = itemView.findViewById(R.id.tv_mobileItemDetails);
             type = itemView.findViewById(R.id.img_callType);
             time = itemView.findViewById(R.id.tv_mobileItemTime);
+            noData = itemView.findViewById(R.id.tv_noData);
+            yesData = itemView.findViewById(R.id.ll_ifData);
         }
     }
 }

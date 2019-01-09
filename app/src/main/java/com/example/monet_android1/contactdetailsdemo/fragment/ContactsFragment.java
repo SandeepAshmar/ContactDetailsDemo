@@ -33,7 +33,6 @@ public class ContactsFragment extends Fragment {
     private static RecyclerView recyclerView;
     private LinearLayoutManager layoutManager;
     private static ContactsAdapter contactsAdapter;
-    private EditText search;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -48,7 +47,6 @@ public class ContactsFragment extends Fragment {
         tv_noContact = view.findViewById(R.id.tv_noContact);
         tv_addContact = view.findViewById(R.id.tv_addContact);
         recyclerView = view.findViewById(R.id.rv_contacts);
-        search = view.findViewById(R.id.edt_contactSearch);
         layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
         readFromDb(getActivity());
@@ -59,70 +57,6 @@ public class ContactsFragment extends Fragment {
                 addNewContact();
             }
         });
-
-        search.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                String title = search.getText().toString();
-
-                if(title.length() == 0){
-                    readFromDb(getActivity());
-                }else{
-                    filter(title);
-                }
-
-                if(count > 0){
-                    tv_addContact.setVisibility(View.GONE);
-                }else{
-                    tv_addContact.setVisibility(View.VISIBLE);
-                }
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-
-            }
-        });
-    }
-
-    void filter(String text) {
-       ContactList temp = new ContactList();
-
-       if(text.matches("[a-zA-Z]+"))
-        for (int i = 0; i < contactList.getName().size() ; i++) {
-            if (contactList.getName().get(i).toLowerCase().contains(text.toLowerCase())) {
-                temp.setName(contactList.getName().get(i));
-                temp.setMobile(contactList.getMobile().get(i));
-            }
-        }else if(text.matches("[0-9]+")){
-           for (int i = 0; i < contactList.getMobile().size() ; i++) {
-               if (contactList.getMobile().get(i).contains(text)) {
-                   temp.setName(contactList.getName().get(i));
-                   temp.setMobile(contactList.getMobile().get(i));
-               }
-           }
-       }
-
-        updateList(temp, text);
-    }
-
-    public void updateList(ContactList list, String text) {
-        if(list.getName().size() > 0){
-            recyclerView.setVisibility(View.VISIBLE);
-            tv_noContact.setVisibility(View.GONE);
-            contactsAdapter = new ContactsAdapter(getActivity(), list);
-            recyclerView.setAdapter(contactsAdapter);
-            contactsAdapter.notifyDataSetChanged();
-        }else{
-            recyclerView.setVisibility(View.GONE);
-            tv_noContact.setVisibility(View.VISIBLE);
-            tv_noContact.setText("No Contact's Found Regarding "+text);
-        }
 
     }
 

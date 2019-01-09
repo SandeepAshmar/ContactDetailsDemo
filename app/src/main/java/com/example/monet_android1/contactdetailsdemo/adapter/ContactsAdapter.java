@@ -19,16 +19,17 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.monet_android1.contactdetailsdemo.R;
+import com.example.monet_android1.contactdetailsdemo.activity.CallDetailsActivity;
 import com.example.monet_android1.contactdetailsdemo.user.ContactList;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.ViewHolder> {
 
     private Context context;
-    private PopupMenu popup;
     private ContactList list;
-    private String lastAlpha = "A";
+    private ArrayList<String> colorList = new ArrayList<>();
 
     public ContactsAdapter(Context context, ContactList list) {
         this.context = context;
@@ -57,9 +58,11 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.ViewHo
             public void onClick(View v) {
                 if (ActivityCompat.checkSelfPermission(context,
                         Manifest.permission.CALL_PHONE) == PackageManager.PERMISSION_GRANTED) {
-                    Intent callIntent = new Intent(Intent.ACTION_CALL);
-                    callIntent.setData(Uri.parse("tel:" + list.getMobile().get(position)));
-                    context.startActivity(callIntent);
+                    Intent intent = new Intent(context, CallDetailsActivity.class);
+                    intent.putExtra("mobile", list.getMobile().get(position));
+                    intent.putExtra("name", list.getName().get(position));
+                    intent.putExtra("color", colorList.get(position));
+                    context.startActivity(intent);
                 } else {
                     Toast.makeText(context, "You don't assign permission.", Toast.LENGTH_SHORT).show();
                 }
@@ -74,7 +77,9 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.ViewHo
 
     public class ViewHolder extends RecyclerView.ViewHolder {
 
-        private TextView id, name, mobile;
+        TextView id;
+        private TextView name;
+        private TextView mobile;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -96,5 +101,8 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.ViewHo
         draw.setShape(GradientDrawable.OVAL);
         draw.setColor(Color.rgb(red, green, blue));
         holder.id.setBackground(draw);
+        String color =  String.format("#%02x%02x%02x", red, green, blue);
+        color = color.replace("android.graphics.drawable.GradientDrawable@", "");
+        colorList.add(color);
     }
 }
