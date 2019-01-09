@@ -2,6 +2,9 @@ package com.example.monet_android1.contactdetailsdemo.activity;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -20,13 +23,17 @@ import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.text.style.TtsSpan;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.monet_android1.contactdetailsdemo.BuildConfig;
 import com.example.monet_android1.contactdetailsdemo.R;
 import com.example.monet_android1.contactdetailsdemo.adapter.CallDetailsAdapter;
+import com.example.monet_android1.contactdetailsdemo.adapter.CallLogAdapter;
 import com.example.monet_android1.contactdetailsdemo.user.CallLog;
 import com.example.monet_android1.contactdetailsdemo.user.UserCallDetails;
 
@@ -46,6 +53,7 @@ public class CallDetailsActivity extends AppCompatActivity {
     private String Name = "", Mobile = "", ColorName = "";
     private UserCallDetails userCallDetails = new UserCallDetails();
     private CardView whatsappCard;
+    private PopupMenu popupMenu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,6 +83,8 @@ public class CallDetailsActivity extends AppCompatActivity {
         ColorName = getIntent().getStringExtra("color").toUpperCase();
         color.setBackgroundColor(Color.parseColor(ColorName));
         recent.setTextColor(Color.parseColor(ColorName));
+
+        popupMenu = new PopupMenu(this, add);
 
         if(getWhatsAppNumbers(Name).isEmpty()){
             whatsappCard.setVisibility(View.GONE);
@@ -107,11 +117,9 @@ public class CallDetailsActivity extends AppCompatActivity {
         if (Name.isEmpty()) {
             cardName.setText("Add New Contact");
             name.setText("Add New Contact");
-            add.setVisibility(View.VISIBLE);
         } else {
             name.setText(Name);
             cardName.setText(Name);
-            add.setVisibility(View.GONE);
         }
 
         mobile.setText(Mobile);
@@ -140,7 +148,7 @@ public class CallDetailsActivity extends AppCompatActivity {
         add.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                addNewContact(Mobile);
+                showMenu(Mobile, Name);
             }
         });
 
@@ -210,12 +218,109 @@ public class CallDetailsActivity extends AppCompatActivity {
         return phoneNumber;
     }
 
+    private void showMenu(final String number, final String name) {
+        popupMenu.getMenu().clear();
+        popupMenu.getMenu().add("Call");
+        popupMenu.getMenu().add("Send message");
+        if (name.isEmpty()) {
+            popupMenu.getMenu().add("Add to contact");
+        }else{
+            popupMenu.getMenu().add("delete contact");
+        }
+        popupMenu.getMenu().add("Share contact");
+        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+
+                if (item.getTitle().equals("Add to contact")) {
+                    addNewContact(number);
+                } else if (item.getTitle().equals("Call")) {
+                    Intent intent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + number));
+                    startActivity(intent);
+                }else if (item.getTitle().equals("Send message")) {
+                    sendSMS(number);
+                }else if(item.getTitle().equals("delete contact")) {
+                    deleteDialog();
+                }else if(item.getTitle().equals("Share contact")) {
+                    shareContact();
+                }
+
+                return true;
+            }
+        });
+        popupMenu.show();
+    }
+
+    private void shareContact(){
+        try {
+            Intent shareIntent = new Intent(Intent.ACTION_SEND);
+            shareIntent.setType("text/plain");
+            String shareMessage= Name+" "+ Mobile;
+            shareIntent.putExtra(Intent.EXTRA_TEXT, shareMessage);
+            startActivity(Intent.createChooser(shareIntent, "choose one"));
+        } catch(Exception e) {
+            //e.toString();
+        }
+    }
+
+    private void deleteDialog(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(CallDetailsActivity.this
+                , R.style.DialogTheme);
+
+        builder.setMessage("Are you sure, you want to delete "+ Name +" from your contact list");
+        builder.setCancelable(false);
+        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if(deleteContact(CallDetailsActivity.this, Mobile, Name)){
+                    Toast.makeText(CallDetailsActivity.this, "Contact has been deleted from your contact list",
+                            Toast.LENGTH_SHORT).show();
+                    finish();
+                }else{
+                    Toast.makeText(CallDetailsActivity.this, "Oops! something went wrong", Toast.LENGTH_SHORT).show();
+                }
+                dialog.dismiss();
+            }
+        });
+        builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        builder.show();
+    }
+
     public void addNewContact(String number) {
         Intent contactIntent = new Intent(ContactsContract.Intents.Insert.ACTION);
         contactIntent.setType(ContactsContract.RawContacts.CONTENT_TYPE);
         contactIntent
                 .putExtra(ContactsContract.Intents.Insert.PHONE, number);
         startActivityForResult(contactIntent, 1);
+    }
+
+    public static boolean deleteContact(Context ctx, String phone, String name) {
+        Uri contactUri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, Uri.encode(phone));
+        Cursor cur = ctx.getContentResolver().query(contactUri, null, null, null, null);
+        try {
+            if (cur.moveToFirst()) {
+                do {
+                    if (cur.getString(cur.getColumnIndex(ContactsContract.PhoneLookup.DISPLAY_NAME)).equalsIgnoreCase(name)) {
+                        String lookupKey = cur.getString(cur.getColumnIndex(ContactsContract.Contacts.LOOKUP_KEY));
+                        Uri uri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_LOOKUP_URI, lookupKey);
+                        ctx.getContentResolver().delete(uri, null, null);
+                        return true;
+                    }
+
+                } while (cur.moveToNext());
+            }
+
+        } catch (Exception e) {
+            System.out.println(e.getStackTrace());
+        } finally {
+            cur.close();
+        }
+        return false;
     }
 
     @Override

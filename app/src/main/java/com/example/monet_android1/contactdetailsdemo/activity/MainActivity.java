@@ -68,8 +68,8 @@ public class MainActivity extends AppCompatActivity {
         card_search = findViewById(R.id.card_search);
 
         adapter = new ViewPagerAdapter(getSupportFragmentManager());
-        adapter.addFragment(new CallDetailsFragment(), "");
         adapter.addFragment(new ContactsFragment(), "");
+        adapter.addFragment(new CallDetailsFragment(), "");
 
         viewPager.setAdapter(adapter);
         tabLayout.setupWithViewPager(viewPager);
@@ -112,8 +112,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setupTabIcons() {
-        tabLayout.getTabAt(0).setIcon(R.drawable.ic_call_detail);
-        tabLayout.getTabAt(1).setIcon(R.drawable.ic_group_24dp);
+        tabLayout.getTabAt(0).setIcon(R.drawable.ic_group_24dp);
+        tabLayout.getTabAt(1).setIcon(R.drawable.ic_call_detail);
     }
 
     @Override

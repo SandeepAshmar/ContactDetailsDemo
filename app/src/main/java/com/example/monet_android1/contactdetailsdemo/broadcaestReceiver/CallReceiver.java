@@ -42,15 +42,15 @@ public class CallReceiver extends BroadcastReceiver {
             }
             onCallStateChanged(context, state, number, intent);
         }
-        int whichSim = intent.getIntExtra("simSlot",-1);
-//        int whichSim =intent.getIntExtra("com.android.phone.extra.slot",-1);
-        if(whichSim==0){
-            Toast.makeText(context, "sim one", Toast.LENGTH_SHORT).show();
-        }else if(whichSim == 1){
-            Toast.makeText(context, "sim two", Toast.LENGTH_SHORT).show();
-        }else{
-            Toast.makeText(context, "pta nahi", Toast.LENGTH_SHORT).show();
-        }
+//        int whichSim = intent.getIntExtra("simSlot",-1);
+////        int whichSim =intent.getIntExtra("com.android.phone.extra.slot",-1);
+//        if(whichSim==0){
+//            Toast.makeText(context, "sim one", Toast.LENGTH_SHORT).show();
+//        }else if(whichSim == 1){
+//            Toast.makeText(context, "sim two", Toast.LENGTH_SHORT).show();
+//        }else{
+//            Toast.makeText(context, "pta nahi", Toast.LENGTH_SHORT).show();
+//        }
     }
 
     public void onCallStateChanged(Context context, int state, String number, Intent intent) {

@@ -83,16 +83,6 @@ public class ContactsFragment extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
         super.onActivityResult(requestCode, resultCode, intent);
-
-        if (requestCode == 1)
-        {
-            if (resultCode == Activity.RESULT_OK) {
-                Toast.makeText(getActivity(), "Contact added successfully", Toast.LENGTH_SHORT).show();
-            }
-            if (resultCode == Activity.RESULT_CANCELED) {
-                Toast.makeText(getActivity(), "Contact not added", Toast.LENGTH_SHORT).show();
-            }
-        }
     }
 
     @Override
