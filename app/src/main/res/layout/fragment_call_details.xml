@@ -3,7 +3,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragment.CallDetailsFragment">
+    tools:context=".fragment.CallDetailsFragment"
+    android:foreground="?android:selectableItemBackground"
+    android:clickable="true">
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/rv_calls"
@@ -18,6 +20,6 @@
         android:layout_centerInParent="true"
         android:text="No Call Record Found"
         android:textColor="@android:color/black"
-        android:textSize="20sp"/>
+        android:textSize="20sp" />
 
 </RelativeLayout>

@@ -22,6 +22,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.example.monet_android1.contactdetailsdemo.R;
@@ -111,6 +112,9 @@ public class MainActivity extends AppCompatActivity {
             String phoneNumber = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
             phoneNumber = phoneNumber.replace(" ", "");
             phoneNumber = phoneNumber.replace("-", "");
+            phoneNumber = phoneNumber.replace("(", "");
+            phoneNumber = phoneNumber.replace(")", "");
+            phoneNumber = phoneNumber.replace("+91", "");
             nameList.add(name);
             contactList.setName(name);
             mobileList.add(phoneNumber);
@@ -124,9 +128,27 @@ public class MainActivity extends AppCompatActivity {
         for (int i = 0; i < contactList.getName().size(); i++) {
             String name = contactList.getName().get(i);
             for (int j = 0; j < nameList.size(); j++) {
-                if(nameList.get(j).equals(name)){
+                if (nameList.get(j).equals(name)) {
                     contactList.setMobile(mobileList.get(j));
                     break;
+                }
+            }
+        }
+
+        int count = 0;
+        for (int i = 0; i < contactList.getMobile().size(); i++) {
+            String mobile = contactList.getMobile().get(i);
+            for (int j = 0; j < contactList.getMobile().size(); j++) {
+                if(contactList.getMobile().get(j).contains(mobile)){
+                    count = count+1;
+                    if(count >= 2){
+                        contactList.getMobile().remove(i);
+                        contactList.getName().remove(i);
+                        Log.d("TAG", "getContactList: mobile : "+i);
+                        count = 0;
+                    }
+                }else {
+                    count = 0;
                 }
             }
         }

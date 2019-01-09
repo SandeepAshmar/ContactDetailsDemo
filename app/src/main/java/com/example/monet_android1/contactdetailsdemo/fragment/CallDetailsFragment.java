@@ -73,7 +73,12 @@ public class CallDetailsFragment extends Fragment {
             List<CallLog> callLogs = myCallsAppDatabase.myCallDao().getCallDetials();
             for (int i = 0; i < callLogs.size(); i++) {
                 String allMobile = callLogs.get(i).getMobile();
-                if (callDetails.getMobile().size() == 0) {
+                allMobile = allMobile.replace(" ", "");
+                allMobile = allMobile.replace("-", "");
+                allMobile = allMobile.replace("(", "");
+                allMobile = allMobile.replace(")", "");
+                allMobile = allMobile.replace("+91", "");
+                if (callDetails.getMobile().size() == 0 && callDetails.getName().size() == 0) {
                     getName(allMobile);
                     callDetails.setMobile(callLogs.get(i).getMobile());
                 } else {
@@ -112,7 +117,7 @@ public class CallDetailsFragment extends Fragment {
         String name = "";
         for (int i = 0; i < contactList.getMobile().size(); i++) {
             String mobile = contactList.getMobile().get(i);
-            if (mobile.contains(number)) {
+            if (mobile.equals(number)) {
                 name = contactList.getName().get(i);
             }
         }

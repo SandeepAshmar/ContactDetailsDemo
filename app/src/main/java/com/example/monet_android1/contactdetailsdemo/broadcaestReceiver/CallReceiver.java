@@ -105,6 +105,11 @@ public class CallReceiver extends BroadcastReceiver {
                 .build();
 
         number = intent.getExtras().getString(TelephonyManager.EXTRA_INCOMING_NUMBER);
+        number = number.replace(" ", "");
+        number = number.replace("-", "");
+        number = number.replace("(", "");
+        number = number.replace(")", "");
+        number = number.replace("+91", "");
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss aaa");
         String dateString = dateFormat.format(new Date(System.currentTimeMillis()));
         CallLog callLog = new CallLog();

@@ -5,7 +5,9 @@
     android:layout_height="match_parent"
     android:focusable="true"
     android:focusableInTouchMode="true"
-    tools:context=".fragment.ContactsFragment">
+    tools:context=".fragment.ContactsFragment"
+    android:foreground="?android:selectableItemBackground"
+    android:clickable="true">
 
     <EditText
         android:id="@+id/edt_contactSearch"

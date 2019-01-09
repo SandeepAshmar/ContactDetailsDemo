@@ -92,12 +92,21 @@ public class ContactsFragment extends Fragment {
 
     void filter(String text) {
        ContactList temp = new ContactList();
+
+       if(text.matches("[a-zA-Z]+"))
         for (int i = 0; i < contactList.getName().size() ; i++) {
             if (contactList.getName().get(i).toLowerCase().contains(text.toLowerCase())) {
                 temp.setName(contactList.getName().get(i));
                 temp.setMobile(contactList.getMobile().get(i));
             }
-        }
+        }else if(text.matches("[0-9]+")){
+           for (int i = 0; i < contactList.getMobile().size() ; i++) {
+               if (contactList.getMobile().get(i).contains(text)) {
+                   temp.setName(contactList.getName().get(i));
+                   temp.setMobile(contactList.getMobile().get(i));
+               }
+           }
+       }
 
         updateList(temp, text);
     }

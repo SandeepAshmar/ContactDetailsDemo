@@ -79,6 +79,14 @@ public class CallLogAdapter extends RecyclerView.Adapter<CallLogAdapter.ViewHold
             }
         });
 
+        holder.firstLetter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + callDetails.getMobile().get(position)));
+                context.startActivity(intent);
+            }
+        });
+
 
     }
 
