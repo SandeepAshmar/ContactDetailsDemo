@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="56dp">
 
-        <LinearLayout
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="horizontal">
@@ -23,6 +23,7 @@
                 android:layout_gravity="center"
                 android:src="@drawable/ic_back_theme_24dp"
                 android:padding="5dp"
+                android:layout_centerVertical="true"
                 android:layout_marginLeft="10dp"/>
 
             <EditText
@@ -35,12 +36,24 @@
                 android:focusable="true"
                 android:hint="Search contact"
                 android:textSize="16dp"
-                android:gravity="center_vertical"
+                android:layout_toRightOf="@id/img_searchBack"
                 android:maxLength="50"
+                android:padding="5dp"
                 android:background="@android:color/transparent"
-                android:layout_marginStart="15dp" />
+                android:layout_marginStart="15dp"
+                android:layout_toLeftOf="@id/img_mic"/>
 
-        </LinearLayout>
+            <ImageView
+                android:id="@+id/img_mic"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/ic_mic_theme_color24dp"
+                android:padding="5dp"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"/>
+
+        </RelativeLayout>
 
     </android.support.v7.widget.CardView>
 

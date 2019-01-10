@@ -1,5 +1,9 @@
 package com.example.monet_android1.contactdetailsdemo.activity;
 
+import android.app.Activity;
+import android.content.ActivityNotFoundException;
+import android.content.Intent;
+import android.speech.RecognizerIntent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -9,6 +13,7 @@ import android.text.TextWatcher;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.example.monet_android1.contactdetailsdemo.R;
 import com.example.monet_android1.contactdetailsdemo.adapter.ContactsAdapter;
@@ -23,7 +28,7 @@ public class SearchScreen extends AppCompatActivity {
     private RecyclerView recyclerView;
     private SearchAdapter searchAdapter;
     private LinearLayoutManager layoutManager;
-    private ImageView back;
+    private ImageView back, mic;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +38,23 @@ public class SearchScreen extends AppCompatActivity {
         search = findViewById(R.id.edt_search);
         recyclerView = findViewById(R.id.rv_search);
         back = findViewById(R.id.img_searchBack);
+        mic = findViewById(R.id.img_mic);
+
+        mic.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                /* Call Activity for Voice Input */
+                Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+
+                intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, "en-US");
+
+                try {
+                    startActivityForResult(intent, 1);
+                } catch (ActivityNotFoundException a) {
+                    Toast.makeText(SearchScreen.this, "Oops! Your device doesn't support Speech to Text",Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
 
         back.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -62,6 +84,21 @@ public class SearchScreen extends AppCompatActivity {
             }
         });
 
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        switch (requestCode) {
+            case 1: {
+                if (resultCode == Activity.RESULT_OK && null != data) {
+                    String yourResult = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS).get(0);
+                    filter(yourResult);
+                }
+                break;
+            }
+        }
     }
 
     void filter(String text) {
