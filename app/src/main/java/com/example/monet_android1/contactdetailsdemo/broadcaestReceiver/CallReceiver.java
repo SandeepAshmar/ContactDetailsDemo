@@ -125,6 +125,9 @@ public class CallReceiver extends BroadcastReceiver {
         number = number.replace("(", "");
         number = number.replace(")", "");
         number = number.replace("+91", "");
+        if(number.length() == 12){
+            number.substring(2);
+        }
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss aaa");
         String dateString = dateFormat.format(new Date(System.currentTimeMillis()));
         CallLog callLog = new CallLog();

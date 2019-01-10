@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.support.v4.app.Fragment;
@@ -12,6 +13,7 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.telecom.Call;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -78,20 +80,26 @@ public class CallDetailsFragment extends Fragment {
                 allMobile = allMobile.replace("(", "");
                 allMobile = allMobile.replace(")", "");
                 allMobile = allMobile.replace("+91", "");
+                if (allMobile.length() == 12) {
+                    Log.d("TAG", "getName: 12 number " + allMobile);
+                    StringBuilder str = new StringBuilder(allMobile);
+                    str.delete(0, 2);
+                    allMobile = str.toString();
+                }
                 if (callDetails.getMobile().size() == 0 && callDetails.getName().size() == 0) {
                     getName(allMobile);
-                    callDetails.setMobile(callLogs.get(i).getMobile());
+                    callDetails.setMobile(allMobile);
                 } else {
                     if (!(callDetails.getMobile().contains(allMobile))) {
                         getName(allMobile);
-                        callDetails.setMobile(callLogs.get(i).getMobile());
+                        callDetails.setMobile(allMobile);
                     }
 
                 }
 
             }
 
-            if(isReverse){
+            if (isReverse) {
                 Collections.reverse(callDetails.getMobile());
                 Collections.reverse(callDetails.getName());
                 isReverse = false;
@@ -115,9 +123,15 @@ public class CallDetailsFragment extends Fragment {
     protected void getName(String number) {
 
         String name = "";
+        if (number.length() == 12) {
+            Log.d("TAG", "getName: 12 number " + number);
+            StringBuilder str = new StringBuilder(number);
+            str.delete(0, 2);
+            number = str.toString();
+        }
         for (int i = 0; i < contactList.getMobile().size(); i++) {
             String mobile = contactList.getMobile().get(i);
-            if (mobile.equals(number)) {
+            if (mobile.contains(number)) {
                 name = contactList.getName().get(i);
             }
         }

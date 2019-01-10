@@ -1,15 +1,12 @@
 package com.example.monet_android1.contactdetailsdemo.activity;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.arch.persistence.room.Room;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.net.Uri;
@@ -24,24 +21,20 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.CardView;
-import android.telephony.SubscriptionInfo;
-import android.telephony.SubscriptionManager;
-import android.util.Log;
 import android.view.View;
-import android.widget.Toast;
 
 import com.example.monet_android1.contactdetailsdemo.R;
 import com.example.monet_android1.contactdetailsdemo.adapter.ViewPagerAdapter;
 import com.example.monet_android1.contactdetailsdemo.appDatabase.MyCallsAppDatabase;
 import com.example.monet_android1.contactdetailsdemo.fragment.CallDetailsFragment;
 import com.example.monet_android1.contactdetailsdemo.fragment.ContactsFragment;
-import com.example.monet_android1.contactdetailsdemo.user.CallLog;
 import com.example.monet_android1.contactdetailsdemo.user.ContactList;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
+
+import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -52,7 +45,6 @@ public class MainActivity extends AppCompatActivity {
     public static MyCallsAppDatabase myCallsAppDatabase;
     public static BroadcastReceiver br;
     public static ContactList contactList = new ContactList();
-    public static ArrayList<String> simName = new ArrayList<>();
     private ArrayList<String> nameList = new ArrayList<>();
     private ArrayList<String> mobileList = new ArrayList<>();
     private CallDetailsFragment callDetailsFragment = new CallDetailsFragment();
@@ -73,21 +65,6 @@ public class MainActivity extends AppCompatActivity {
 
         viewPager.setAdapter(adapter);
         tabLayout.setupWithViewPager(viewPager);
-        viewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageScrolled(int i, float v, int i1) {
-            }
-
-            @Override
-            public void onPageSelected(int i) {
-//                Toast.makeText(MainActivity.this, "" + i, Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int i) {
-
-            }
-        });
         tabLayout.setSelectedTabIndicatorColor(Color.parseColor("#D81B60"));
 
         myCallsAppDatabase = Room.databaseBuilder(this, MyCallsAppDatabase.class, "calldb")
@@ -109,6 +86,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         setupTabIcons();
+
     }
 
     private void setupTabIcons() {
@@ -130,6 +108,7 @@ public class MainActivity extends AppCompatActivity {
     private void getContactList() {
         contactList.getName().clear();
         contactList.getMobile().clear();
+        contactList.getImageList().clear();
         Cursor phones = getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null, null, null);
         while (phones.moveToNext()) {
             String name = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
@@ -168,7 +147,6 @@ public class MainActivity extends AppCompatActivity {
                     if (count >= 2) {
                         contactList.getMobile().remove(i);
                         contactList.getName().remove(i);
-                        Log.d("TAG", "getContactList: mobile : " + i);
                         count = 0;
                     }
                 } else {
@@ -177,28 +155,10 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
+
         phones.close();
         nameList.clear();
         mobileList.clear();
-
-        getSimName();
-    }
-
-    @SuppressLint("NewApi")
-    private void getSimName() {
-        simName.clear();
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE)
-                == PackageManager.PERMISSION_GRANTED) {
-            List<SubscriptionInfo> subscriptionInfos = SubscriptionManager.
-                    from(getApplicationContext()).getActiveSubscriptionInfoList();
-            for (int i = 0; i < subscriptionInfos.size(); i++) {
-                SubscriptionInfo lsuSubscriptionInfo = subscriptionInfos.get(i);
-                simName.add(lsuSubscriptionInfo.getNumber()+lsuSubscriptionInfo.getCarrierName());
-//                Log.d("TAG", "getNumber " + lsuSubscriptionInfo.getNumber());
-//                Log.d("TAG", "network name : " + lsuSubscriptionInfo.getCarrierName());
-            }
-        }
-
     }
 
     private boolean checkPhoneStatePermission() {
@@ -206,12 +166,9 @@ public class MainActivity extends AppCompatActivity {
                 Manifest.permission.READ_PHONE_STATE) + ContextCompat.checkSelfPermission(this,
                 Manifest.permission.CALL_PHONE) + ContextCompat.checkSelfPermission(this,
                 Manifest.permission.READ_CONTACTS) + ContextCompat.checkSelfPermission(this,
-                Manifest.permission.WRITE_CONTACTS);
-        if (result == PackageManager.PERMISSION_GRANTED) {
-            return true;
-        } else {
-            return false;
-        }
+                Manifest.permission.WRITE_CONTACTS)+ ContextCompat.checkSelfPermission(this,
+                Manifest.permission.RECEIVE_SMS);
+        return result == PERMISSION_GRANTED;
     }
 
     private void requestPhoneStatePermission() {
@@ -234,13 +191,13 @@ public class MainActivity extends AppCompatActivity {
         } else {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_PHONE_STATE,
                     Manifest.permission.CALL_PHONE, Manifest.permission.READ_CONTACTS,
-                    Manifest.permission.WRITE_CONTACTS}, 1012);
+                    Manifest.permission.WRITE_CONTACTS, Manifest.permission.RECEIVE_SMS}, 1012);
         }
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (grantResults.length > 0 && grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+        if (grantResults.length > 0 && grantResults[0] != PERMISSION_GRANTED) {
             AlertDialog.Builder alertDialog = new AlertDialog.Builder(this, R.style.DialogTheme);
             alertDialog.setMessage("You Have To Give Permission From Your Device Setting To go in Setting Please Click on Settings Button");
             alertDialog.setCancelable(false);

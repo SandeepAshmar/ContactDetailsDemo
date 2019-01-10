@@ -10,20 +10,26 @@ import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.example.monet_android1.contactdetailsdemo.R;
 import com.example.monet_android1.contactdetailsdemo.activity.CallDetailsActivity;
 import com.example.monet_android1.contactdetailsdemo.user.ContactList;
 
 import java.util.ArrayList;
 import java.util.Random;
+
+import de.hdodenhof.circleimageview.CircleImageView;
+
 
 public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.ViewHolder> {
 
@@ -46,7 +52,6 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.ViewHo
 
     @Override
     public void onBindViewHolder(@NonNull final ContactsAdapter.ViewHolder holder, final int position) {
-
         generateRandomNumber(holder);
         holder.name.setText(list.getName().get(position));
         String text = String.valueOf(holder.name.getText().charAt(0));
@@ -77,7 +82,7 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.ViewHo
 
     public class ViewHolder extends RecyclerView.ViewHolder {
 
-        TextView id;
+        private TextView id;
         private TextView name;
         private TextView mobile;
 
@@ -101,7 +106,7 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.ViewHo
         draw.setShape(GradientDrawable.OVAL);
         draw.setColor(Color.rgb(red, green, blue));
         holder.id.setBackground(draw);
-        String color =  String.format("#%02x%02x%02x", red, green, blue);
+        String color = String.format("#%02x%02x%02x", red, green, blue);
         color = color.replace("android.graphics.drawable.GradientDrawable@", "");
         colorList.add(color);
     }

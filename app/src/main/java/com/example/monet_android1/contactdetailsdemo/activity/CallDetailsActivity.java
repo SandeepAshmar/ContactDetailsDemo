@@ -3,12 +3,15 @@ package com.example.monet_android1.contactdetailsdemo.activity;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Color;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.nfc.tech.NfcA;
 import android.os.Build;
@@ -20,6 +23,7 @@ import android.os.Bundle;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.telephony.PhoneNumberUtils;
 import android.text.TextUtils;
 import android.text.style.TtsSpan;
 import android.util.Log;
@@ -76,7 +80,7 @@ public class CallDetailsActivity extends AppCompatActivity {
         recent = findViewById(R.id.tv_recent);
         whatsappCard = findViewById(R.id.whatsappCard);
         whatsName = findViewById(R.id.tv_whatsAppName);
-        whatsMobile= findViewById(R.id.tv_whatsAppMobile);
+        whatsMobile = findViewById(R.id.tv_whatsAppMobile);
 
         Name = getIntent().getStringExtra("name");
         Mobile = getIntent().getStringExtra("mobile");
@@ -85,31 +89,20 @@ public class CallDetailsActivity extends AppCompatActivity {
         recent.setTextColor(Color.parseColor(ColorName));
 
         popupMenu = new PopupMenu(this, add);
-
-        if(getWhatsAppNumbers(Name).isEmpty()){
-            whatsappCard.setVisibility(View.GONE);
-        }else{
-            whatsName.setText(Name);
-            whatsMobile.setText(Mobile);
-        }
+        whatsName.setText(Name);
+        whatsMobile.setText(Mobile);
 
         whatsappCard.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                PackageManager packageManager = getPackageManager();
-                Intent i = new Intent(Intent.ACTION_VIEW);
-
-                try {
-                    String url = "https://api.whatsapp.com/send?phone="+
-                            "+91 "+Mobile +"&text=" + URLEncoder.encode("", "UTF-8");
-                    i.setPackage("com.whatsapp");
-                    i.setData(Uri.parse(url));
-                    if (i.resolveActivity(packageManager) != null) {
-                        startActivity(i);
+                if (Name.isEmpty()) {
+                    if(isConnectionAvailable(CallDetailsActivity.this)){
+                        checkUnsavedNumberOnWhatsapp(Mobile);
+                    }else{
+                        Toast.makeText(CallDetailsActivity.this, "Please check your internet connection", Toast.LENGTH_SHORT).show();
                     }
-                } catch (Exception e){
-                    e.printStackTrace();
-                    Toast.makeText(CallDetailsActivity.this, ""+e.getMessage(), Toast.LENGTH_SHORT).show();
+                } else {
+                    sendMsgOnSavedWhatsappNumber(Mobile);
                 }
             }
         });
@@ -117,6 +110,7 @@ public class CallDetailsActivity extends AppCompatActivity {
         if (Name.isEmpty()) {
             cardName.setText("Add New Contact");
             name.setText("Add New Contact");
+            whatsName.setVisibility(View.GONE);
         } else {
             name.setText(Name);
             cardName.setText(Name);
@@ -185,46 +179,47 @@ public class CallDetailsActivity extends AppCompatActivity {
         recyclerView.hasFixedSize();
     }
 
-    public String getWhatsAppNumbers(String contactName) {
-        String phoneNumber = "";
-        Cursor cursor1 = getContentResolver().query(
-                ContactsContract.RawContacts.CONTENT_URI,
-                new String[]{ContactsContract.RawContacts._ID},
-                ContactsContract.RawContacts.ACCOUNT_TYPE + "= ? AND " + ContactsContract.CommonDataKinds.StructuredName.DISPLAY_NAME_PRIMARY + " = ?",
-                new String[]{"com.whatsapp", contactName},
-                null);
+    public static boolean isConnectionAvailable(Context ctx) {
+        ConnectivityManager mManager = (ConnectivityManager) ctx
+                .getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo mNetworkInfo = mManager.getActiveNetworkInfo();
+        return (mNetworkInfo != null) && (mNetworkInfo.isConnected());
+    }
 
-        while (cursor1.moveToNext()) {
-            String rawContactId = cursor1.getString(cursor1.getColumnIndex(ContactsContract.RawContacts._ID));
+    private void checkUnsavedNumberOnWhatsapp(String mobile) {
+        PackageManager packageManager = getPackageManager();
+        Intent i = new Intent(Intent.ACTION_VIEW);
 
-            Cursor cursor2 = getContentResolver().query(
-                    ContactsContract.Data.CONTENT_URI,
-                    new String[]{ContactsContract.Data.DATA3},
-                    ContactsContract.Data.MIMETYPE + " = ? AND " + ContactsContract.Data.RAW_CONTACT_ID + " = ? ",
-                    new String[]{"vnd.android.cursor.item/vnd.com.whatsapp.profile", rawContactId},
-                    null);
-
-            while (cursor2.moveToNext()) {
-                phoneNumber = cursor2.getString(0);
-
-                if (TextUtils.isEmpty(phoneNumber))
-                    continue;
-
-                if (phoneNumber.startsWith("Message "))
-                    phoneNumber = phoneNumber.replace("Message ", "");
+        try {
+            String url = "https://api.whatsapp.com/send?phone=" +
+                    "+91 " + mobile + "&text=" + URLEncoder.encode("", "UTF-8");
+            i.setPackage("com.whatsapp");
+            i.setData(Uri.parse(url));
+            if (i.resolveActivity(packageManager) != null) {
+                startActivity(i);
             }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(CallDetailsActivity.this, "" + e.getMessage(), Toast.LENGTH_SHORT).show();
         }
+    }
 
-        return phoneNumber;
+    private void sendMsgOnSavedWhatsappNumber(String mobile){
+        Intent sendIntent = new Intent("android.intent.action.MAIN");
+        sendIntent.setComponent(new ComponentName("com.whatsapp", "com.whatsapp.Conversation"));
+        sendIntent.putExtra("jid",
+                PhoneNumberUtils.stripSeparators("91" + mobile) + "@s.whatsapp.net");
+        startActivity(sendIntent);
     }
 
     private void showMenu(final String number, final String name) {
         popupMenu.getMenu().clear();
         popupMenu.getMenu().add("Call");
         popupMenu.getMenu().add("Send message");
+        popupMenu.getMenu().add("Edit number before call");
         if (name.isEmpty()) {
             popupMenu.getMenu().add("Add to contact");
-        }else{
+        } else {
             popupMenu.getMenu().add("delete contact");
         }
         popupMenu.getMenu().add("Share contact");
@@ -237,12 +232,15 @@ public class CallDetailsActivity extends AppCompatActivity {
                 } else if (item.getTitle().equals("Call")) {
                     Intent intent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + number));
                     startActivity(intent);
-                }else if (item.getTitle().equals("Send message")) {
+                } else if (item.getTitle().equals("Send message")) {
                     sendSMS(number);
-                }else if(item.getTitle().equals("delete contact")) {
+                } else if (item.getTitle().equals("delete contact")) {
                     deleteDialog();
-                }else if(item.getTitle().equals("Share contact")) {
+                } else if (item.getTitle().equals("Share contact")) {
                     shareContact();
+                } else if (item.getTitle().equals("Edit number before call")) {
+                    Intent intent = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + number));
+                    startActivity(intent);
                 }
 
                 return true;
@@ -251,32 +249,32 @@ public class CallDetailsActivity extends AppCompatActivity {
         popupMenu.show();
     }
 
-    private void shareContact(){
+    private void shareContact() {
         try {
             Intent shareIntent = new Intent(Intent.ACTION_SEND);
             shareIntent.setType("text/plain");
-            String shareMessage= Name+" "+ Mobile;
+            String shareMessage = Name + " " + Mobile;
             shareIntent.putExtra(Intent.EXTRA_TEXT, shareMessage);
             startActivity(Intent.createChooser(shareIntent, "choose one"));
-        } catch(Exception e) {
+        } catch (Exception e) {
             //e.toString();
         }
     }
 
-    private void deleteDialog(){
+    private void deleteDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(CallDetailsActivity.this
                 , R.style.DialogTheme);
 
-        builder.setMessage("Are you sure, you want to delete "+ Name +" from your contact list");
+        builder.setMessage("Are you sure, you want to delete " + Name + " from your contact list");
         builder.setCancelable(false);
         builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                if(deleteContact(CallDetailsActivity.this, Mobile, Name)){
+                if (deleteContact(CallDetailsActivity.this, Mobile, Name)) {
                     Toast.makeText(CallDetailsActivity.this, "Contact has been deleted from your contact list",
                             Toast.LENGTH_SHORT).show();
                     finish();
-                }else{
+                } else {
                     Toast.makeText(CallDetailsActivity.this, "Oops! something went wrong", Toast.LENGTH_SHORT).show();
                 }
                 dialog.dismiss();

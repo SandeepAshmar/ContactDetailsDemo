@@ -4,6 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".fragment.CallDetailsFragment"
+    android:background="@android:color/white"
     android:foreground="?android:selectableItemBackground"
     android:clickable="true">
 

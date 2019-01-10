@@ -4,14 +4,12 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.Telephony;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -24,17 +22,10 @@ import android.widget.Toast;
 import com.example.monet_android1.contactdetailsdemo.R;
 import com.example.monet_android1.contactdetailsdemo.activity.CallDetailsActivity;
 import com.example.monet_android1.contactdetailsdemo.click.CallClickListner;
-import com.example.monet_android1.contactdetailsdemo.fragment.CallDetailsFragment;
 import com.example.monet_android1.contactdetailsdemo.user.CallDetails;
-import com.example.monet_android1.contactdetailsdemo.user.CallLog;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
-
-import static android.content.ContentValues.TAG;
-import static com.example.monet_android1.contactdetailsdemo.activity.MainActivity.contactList;
-import static com.example.monet_android1.contactdetailsdemo.activity.MainActivity.myCallsAppDatabase;
 
 public class CallLogAdapter extends RecyclerView.Adapter<CallLogAdapter.ViewHolder> {
 
@@ -94,11 +85,12 @@ public class CallLogAdapter extends RecyclerView.Adapter<CallLogAdapter.ViewHold
         PopupMenu popupMenu = new PopupMenu(context, holder.more);
         if (name.isEmpty()) {
             popupMenu.getMenu().add("Add to contact");
-        }else{
+        } else {
             popupMenu.getMenu().add("Send message");
         }
         popupMenu.getMenu().add("Call Details");
         popupMenu.getMenu().add("Call");
+        popupMenu.getMenu().add("Edit number before call");
         popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
@@ -108,9 +100,12 @@ public class CallLogAdapter extends RecyclerView.Adapter<CallLogAdapter.ViewHold
                 } else if (item.getTitle().equals("Call")) {
                     Intent intent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + number));
                     context.startActivity(intent);
-                }else if (item.getTitle().equals("Send message")) {
+                } else if (item.getTitle().equals("Send message")) {
                     sendSMS(number);
-                }else {
+                } else if (item.getTitle().equals("Edit number before call")) {
+                    Intent intent = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + number));
+                    context.startActivity(intent);
+                } else {
                     Intent intent = new Intent(context, CallDetailsActivity.class);
                     intent.putExtra("mobile", number);
                     intent.putExtra("name", name);
@@ -156,34 +151,19 @@ public class CallLogAdapter extends RecyclerView.Adapter<CallLogAdapter.ViewHold
         draw.setShape(GradientDrawable.RECTANGLE);
         draw.setColor(Color.rgb(red, green, blue));
         holder.firstLetter.setBackground(draw);
-        String color =  String.format("#%02x%02x%02x", red, green, blue);
+        String color = String.format("#%02x%02x%02x", red, green, blue);
         color = color.replace("android.graphics.drawable.GradientDrawable@", "");
         colorList.add(color);
     }
 
     private void sendSMS(String mobile) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) // At least KitKat
-        {
-            String defaultSmsPackageName = Telephony.Sms.getDefaultSmsPackage(context); // Need to change the build to API 19
-
-            Intent sendIntent = new Intent(Intent.ACTION_SEND);
-            sendIntent.putExtra("address",mobile);
-            sendIntent.setType("text/plain");
-
-            if (defaultSmsPackageName != null)// Can be null in case that there is no default, then the user would be able to choose
-            // any app that support this intent.
-            {
-                sendIntent.setPackage(defaultSmsPackageName);
-            }
+        try {
+            Intent sendIntent = new Intent(Intent.ACTION_VIEW);
+            sendIntent.setData(Uri.parse("sms:"));
+            sendIntent.putExtra("address", mobile);
             context.startActivity(sendIntent);
-
-        }
-        else // For early versions, do what worked for you before.
-        {
-            Intent smsIntent = new Intent(android.content.Intent.ACTION_VIEW);
-            smsIntent.setType("vnd.android-dir/mms-sms");
-            smsIntent.putExtra("address",mobile);
-            context.startActivity(smsIntent);
+        } catch (Exception e) {
+            Toast.makeText(context, "Oops! something went wrong.", Toast.LENGTH_SHORT).show();
         }
     }
 }

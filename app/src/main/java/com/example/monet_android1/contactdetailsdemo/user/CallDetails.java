@@ -1,5 +1,7 @@
 package com.example.monet_android1.contactdetailsdemo.user;
 
+import android.graphics.Bitmap;
+
 import java.util.ArrayList;
 
 public class CallDetails {
@@ -7,6 +9,7 @@ public class CallDetails {
     private ArrayList<String> name = new ArrayList<>();
 
     private ArrayList<String> mobile = new ArrayList<>();
+
 
     public ArrayList<String> getName() {
         return name;
