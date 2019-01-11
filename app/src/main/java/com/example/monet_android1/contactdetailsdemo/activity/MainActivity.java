@@ -1,6 +1,7 @@
 package com.example.monet_android1.contactdetailsdemo.activity;
 
 import android.Manifest;
+import android.app.Activity;
 import android.arch.persistence.room.Room;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -12,6 +13,7 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.provider.ContactsContract;
 import android.provider.Settings;
+import android.speech.RecognizerIntent;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
@@ -22,6 +24,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.CardView;
 import android.view.View;
+import android.widget.ImageView;
 
 import com.example.monet_android1.contactdetailsdemo.R;
 import com.example.monet_android1.contactdetailsdemo.adapter.ViewPagerAdapter;
@@ -36,6 +39,7 @@ import java.util.HashSet;
 
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 import static com.example.monet_android1.contactdetailsdemo.helper.AppUtils.filterNumber;
+import static com.example.monet_android1.contactdetailsdemo.helper.AppUtils.voiceSearch;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -50,6 +54,7 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList<String> mobileList = new ArrayList<>();
     private CallDetailsFragment callDetailsFragment = new CallDetailsFragment();
     private CardView card_search;
+    private ImageView search;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +64,14 @@ public class MainActivity extends AppCompatActivity {
         tabLayout = findViewById(R.id.tabLayout);
         viewPager = findViewById(R.id.viewPager);
         card_search = findViewById(R.id.card_search);
+        search = findViewById(R.id.img_mainSearch);
+
+        search.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                voiceSearch(MainActivity.this);
+            }
+        });
 
         adapter = new ViewPagerAdapter(getSupportFragmentManager());
         adapter.addFragment(new ContactsFragment(), "");
@@ -87,13 +100,30 @@ public class MainActivity extends AppCompatActivity {
         });
 
         setupTabIcons();
-
     }
 
     private void setupTabIcons() {
         tabLayout.getTabAt(0).setIcon(R.drawable.ic_group_24dp);
         tabLayout.getTabAt(1).setIcon(R.drawable.ic_call_detail);
     }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        switch (requestCode) {
+            case 1: {
+                if (resultCode == Activity.RESULT_OK && null != data) {
+                    String yourResult = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS).get(0);
+                    Intent intent = new Intent(this, SearchScreen.class);
+                    intent.putExtra("searchResult", yourResult);
+                    startActivity(intent);
+                }
+                break;
+            }
+        }
+    }
+
 
     @Override
     protected void onResume() {

@@ -1,6 +1,7 @@
 package com.example.monet_android1.contactdetailsdemo.helper;
 
 import android.app.Activity;
+import android.content.ActivityNotFoundException;
 import android.content.ContentProviderOperation;
 import android.content.ContentUris;
 import android.content.Context;
@@ -15,8 +16,11 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.RemoteException;
 import android.provider.ContactsContract;
+import android.speech.RecognizerIntent;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
+
+import com.example.monet_android1.contactdetailsdemo.activity.SearchScreen;
 
 import java.io.ByteArrayInputStream;
 import java.net.URLEncoder;
@@ -174,6 +178,19 @@ public class AppUtils {
             cursor.close();
         }
         return null;
+    }
+
+    public static void voiceSearch(Activity activity){
+        /* Call Activity for Voice Input */
+        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, "en-US");
+
+        try {
+            activity.startActivityForResult(intent, 1);
+        } catch (ActivityNotFoundException a) {
+            Toast.makeText(activity, "Oops! Your device doesn't support Speech to Text",Toast.LENGTH_SHORT).show();
+        }
     }
 
     public void updateContact (String contactId, String newNumber, String name , Activity act)

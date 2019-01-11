@@ -21,6 +21,7 @@ import com.example.monet_android1.contactdetailsdemo.adapter.SearchAdapter;
 import com.example.monet_android1.contactdetailsdemo.user.ContactList;
 
 import static com.example.monet_android1.contactdetailsdemo.activity.MainActivity.contactList;
+import static com.example.monet_android1.contactdetailsdemo.helper.AppUtils.voiceSearch;
 
 public class SearchScreen extends AppCompatActivity {
 
@@ -40,19 +41,16 @@ public class SearchScreen extends AppCompatActivity {
         back = findViewById(R.id.img_searchBack);
         mic = findViewById(R.id.img_mic);
 
+        String text = getIntent().getStringExtra("searchResult");
+        if(!text.isEmpty()){
+            search.setText(text);
+            filter(text);
+        }
+
         mic.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                /* Call Activity for Voice Input */
-                Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-
-                intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, "en-US");
-
-                try {
-                    startActivityForResult(intent, 1);
-                } catch (ActivityNotFoundException a) {
-                    Toast.makeText(SearchScreen.this, "Oops! Your device doesn't support Speech to Text",Toast.LENGTH_SHORT).show();
-                }
+                voiceSearch(SearchScreen.this);
             }
         });
 
