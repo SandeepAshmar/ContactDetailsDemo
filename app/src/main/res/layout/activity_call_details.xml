@@ -6,8 +6,6 @@
     android:layout_height="match_parent"
     tools:context=".activity.CallDetailsActivity">
 
-
-
     <ImageView
         android:id="@+id/img_back"
         android:layout_width="40dp"
@@ -39,6 +37,17 @@
         android:id="@+id/img_color"
         android:layout_width="match_parent"
         android:layout_height="180dp" />
+
+    <com.example.monet_android1.contactdetailsdemo.user.CircularImageView
+        android:id="@+id/img_circleDetails"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="116dp"
+        android:layout_marginEnd="19dp"
+        android:layout_marginRight="19dp" />
 
     <TextView
         android:id="@+id/tv_detName"

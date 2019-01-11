@@ -18,8 +18,6 @@ import android.provider.ContactsContract;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
-import com.example.monet_android1.contactdetailsdemo.activity.CallDetailsActivity;
-
 import java.io.ByteArrayInputStream;
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -156,7 +154,8 @@ public class AppUtils {
         return false;
     }
 
-    public Bitmap getPhoto(long contactId, Context context) {
+    public static Bitmap getPhoto(String mobile, Context context) {
+        long contactId = getContactIDFromNumber(mobile, context);
         Uri contactUri = ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, contactId);
         Uri photoUri = Uri.withAppendedPath(contactUri, ContactsContract.Contacts.Photo.CONTENT_DIRECTORY);
         Cursor cursor = context.getContentResolver().query(photoUri,

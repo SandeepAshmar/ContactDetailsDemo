@@ -7,29 +7,21 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
-import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
 import com.example.monet_android1.contactdetailsdemo.R;
 import com.example.monet_android1.contactdetailsdemo.activity.CallDetailsActivity;
 import com.example.monet_android1.contactdetailsdemo.user.ContactList;
 
 import java.util.ArrayList;
 import java.util.Random;
-
-import de.hdodenhof.circleimageview.CircleImageView;
-
 
 public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.ViewHolder> {
 

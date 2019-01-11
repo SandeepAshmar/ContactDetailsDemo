@@ -30,5 +30,4 @@ dependencies {
     implementation 'android.arch.persistence.room:runtime:1.1.1'
     annotationProcessor 'android.arch.persistence.room:compiler:1.1.1'
     implementation 'com.github.bumptech.glide:glide:4.8.0'
-    implementation 'de.hdodenhof:circleimageview:2.2.0'
 }

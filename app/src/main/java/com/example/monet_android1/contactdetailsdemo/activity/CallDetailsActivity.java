@@ -39,6 +39,7 @@ import com.example.monet_android1.contactdetailsdemo.R;
 import com.example.monet_android1.contactdetailsdemo.adapter.CallDetailsAdapter;
 import com.example.monet_android1.contactdetailsdemo.adapter.CallLogAdapter;
 import com.example.monet_android1.contactdetailsdemo.user.CallLog;
+import com.example.monet_android1.contactdetailsdemo.user.CircularImageView;
 import com.example.monet_android1.contactdetailsdemo.user.UserCallDetails;
 
 import java.net.URLEncoder;
@@ -49,6 +50,7 @@ import static com.example.monet_android1.contactdetailsdemo.activity.MainActivit
 import static com.example.monet_android1.contactdetailsdemo.helper.AppUtils.checkUnsavedNumberOnWhatsapp;
 import static com.example.monet_android1.contactdetailsdemo.helper.AppUtils.deleteContact;
 import static com.example.monet_android1.contactdetailsdemo.helper.AppUtils.getContactIDFromNumber;
+import static com.example.monet_android1.contactdetailsdemo.helper.AppUtils.getPhoto;
 import static com.example.monet_android1.contactdetailsdemo.helper.AppUtils.hasWhatsApp;
 import static com.example.monet_android1.contactdetailsdemo.helper.AppUtils.isConnectionAvailable;
 
@@ -63,6 +65,7 @@ public class CallDetailsActivity extends AppCompatActivity {
     private UserCallDetails userCallDetails = new UserCallDetails();
     private CardView whatsappCard;
     private PopupMenu popupMenu;
+    private CircularImageView circleImage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,6 +89,7 @@ public class CallDetailsActivity extends AppCompatActivity {
         whatsName = findViewById(R.id.tv_whatsAppName);
         whatsMobile = findViewById(R.id.tv_whatsAppMobile);
         recyclerView = findViewById(R.id.rv_details);
+        circleImage = findViewById(R.id.img_circleDetails);
 
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
@@ -93,6 +97,8 @@ public class CallDetailsActivity extends AppCompatActivity {
         setActivityData();
         setAdapterData();
         handleClick();
+
+        circleImage.setImageBitmap(getPhoto(Mobile, this));
 
     }
 
