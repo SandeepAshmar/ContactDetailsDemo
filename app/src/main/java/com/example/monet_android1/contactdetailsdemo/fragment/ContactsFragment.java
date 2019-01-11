@@ -1,7 +1,6 @@
 package com.example.monet_android1.contactdetailsdemo.fragment;
 
 
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
