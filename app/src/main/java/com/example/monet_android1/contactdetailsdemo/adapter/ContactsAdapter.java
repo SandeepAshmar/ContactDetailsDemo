@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.GradientDrawable;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -23,8 +22,6 @@ import com.example.monet_android1.contactdetailsdemo.user.ContactList;
 
 import java.util.ArrayList;
 import java.util.Random;
-
-import static com.example.monet_android1.contactdetailsdemo.helper.AppUtils.getPhoto;
 
 public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.ViewHolder> {
 
