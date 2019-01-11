@@ -1,5 +1,6 @@
 package com.example.monet_android1.contactdetailsdemo.helper;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.ContentProviderOperation;
@@ -14,9 +15,12 @@ import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.os.Build;
 import android.os.RemoteException;
 import android.provider.ContactsContract;
+import android.provider.Telephony;
 import android.speech.RecognizerIntent;
+import android.support.v4.app.ActivityCompat;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
@@ -134,6 +138,20 @@ public class AppUtils {
         return close;
     }
 
+    public static boolean whatsApplicationCheck(Context context) {
+        String uri = "com.whatsapp";
+        PackageManager pm = context.getPackageManager();
+        boolean app_installed;
+        try {
+            pm.getPackageInfo(uri, PackageManager.GET_ACTIVITIES);
+            app_installed = true;
+        }
+        catch (PackageManager.NameNotFoundException e) {
+            app_installed = false;
+        }
+        return app_installed;
+    }
+
     public static boolean deleteContact(Context ctx, String phone, String name) {
         Uri contactUri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, Uri.encode(phone));
         Cursor cur = ctx.getContentResolver().query(contactUri, null, null, null, null);
@@ -160,22 +178,24 @@ public class AppUtils {
 
     public static Bitmap getPhoto(String mobile, Context context) {
         long contactId = getContactIDFromNumber(mobile, context);
-        Uri contactUri = ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, contactId);
-        Uri photoUri = Uri.withAppendedPath(contactUri, ContactsContract.Contacts.Photo.CONTENT_DIRECTORY);
-        Cursor cursor = context.getContentResolver().query(photoUri,
-                new String[]{ContactsContract.Contacts.Photo.PHOTO}, null, null, null);
-        if (cursor == null) {
-            return null;
-        }
-        try {
-            if (cursor.moveToFirst()) {
-                byte[] data = cursor.getBlob(0);
-                if (data != null) {
-                    return BitmapFactory.decodeStream(new ByteArrayInputStream(data));
-                }
+        if(!(contactId < 0)){
+            Uri contactUri = ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, contactId);
+            Uri photoUri = Uri.withAppendedPath(contactUri, ContactsContract.Contacts.Photo.CONTENT_DIRECTORY);
+            Cursor cursor = context.getContentResolver().query(photoUri,
+                    new String[]{ContactsContract.Contacts.Photo.PHOTO}, null, null, null);
+            if (cursor == null) {
+                return null;
             }
-        } finally {
-            cursor.close();
+            try {
+                if (cursor.moveToFirst()) {
+                    byte[] data = cursor.getBlob(0);
+                    if (data != null) {
+                        return BitmapFactory.decodeStream(new ByteArrayInputStream(data));
+                    }
+                }
+            } finally {
+                cursor.close();
+            }
         }
         return null;
     }
@@ -190,6 +210,42 @@ public class AppUtils {
             activity.startActivityForResult(intent, 1);
         } catch (ActivityNotFoundException a) {
             Toast.makeText(activity, "Oops! Your device doesn't support Speech to Text",Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public static void callUser(String Mobile, Context context){
+        if (ActivityCompat.checkSelfPermission(context,
+                Manifest.permission.CALL_PHONE) == PackageManager.PERMISSION_GRANTED) {
+            Intent callIntent = new Intent(Intent.ACTION_CALL);
+            callIntent.setData(Uri.parse("tel:" + Mobile));
+            context.startActivity(callIntent);
+        } else {
+            Toast.makeText(context, "You don't assign permission.", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public static void sendSMS(String mobile, Context context) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) // At least KitKat
+        {
+            String defaultSmsPackageName = Telephony.Sms.getDefaultSmsPackage(context); // Need to change the build to API 19
+
+            Intent sendIntent = new Intent(Intent.ACTION_SEND);
+            sendIntent.putExtra("address", mobile);
+            sendIntent.setType("text/plain");
+
+            if (defaultSmsPackageName != null)// Can be null in case that there is no default, then the user would be able to choose
+            // any app that support this intent.
+            {
+                sendIntent.setPackage(defaultSmsPackageName);
+            }
+            context.startActivity(sendIntent);
+
+        } else // For early versions, do what worked for you before.
+        {
+            Intent smsIntent = new Intent(android.content.Intent.ACTION_VIEW);
+            smsIntent.setType("vnd.android-dir/mms-sms");
+            smsIntent.putExtra("address", mobile);
+            context.startActivity(smsIntent);
         }
     }
 

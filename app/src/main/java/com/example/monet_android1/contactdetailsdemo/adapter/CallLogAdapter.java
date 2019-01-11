@@ -27,6 +27,9 @@ import com.example.monet_android1.contactdetailsdemo.user.CallDetails;
 import java.util.ArrayList;
 import java.util.Random;
 
+import static com.example.monet_android1.contactdetailsdemo.helper.AppUtils.callUser;
+import static com.example.monet_android1.contactdetailsdemo.helper.AppUtils.sendSMS;
+
 public class CallLogAdapter extends RecyclerView.Adapter<CallLogAdapter.ViewHolder> {
 
     private Context context;
@@ -73,8 +76,7 @@ public class CallLogAdapter extends RecyclerView.Adapter<CallLogAdapter.ViewHold
         holder.firstLetter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + callDetails.getMobile().get(position)));
-                context.startActivity(intent);
+                callUser(callDetails.getMobile().get(position), context);
             }
         });
 
@@ -98,10 +100,9 @@ public class CallLogAdapter extends RecyclerView.Adapter<CallLogAdapter.ViewHold
                 if (item.getTitle().equals("Add to contact")) {
                     callClickListner.onItemClick(callDetails.getMobile().get(position));
                 } else if (item.getTitle().equals("Call")) {
-                    Intent intent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + number));
-                    context.startActivity(intent);
+                    callUser(number, context);
                 } else if (item.getTitle().equals("Send message")) {
-                    sendSMS(number);
+                    sendSMS(number, context);
                 } else if (item.getTitle().equals("Edit number before call")) {
                     Intent intent = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + number));
                     context.startActivity(intent);
@@ -154,16 +155,5 @@ public class CallLogAdapter extends RecyclerView.Adapter<CallLogAdapter.ViewHold
         String color = String.format("#%02x%02x%02x", red, green, blue);
         color = color.replace("android.graphics.drawable.GradientDrawable@", "");
         colorList.add(color);
-    }
-
-    private void sendSMS(String mobile) {
-        try {
-            Intent sendIntent = new Intent(Intent.ACTION_VIEW);
-            sendIntent.setData(Uri.parse("sms:"));
-            sendIntent.putExtra("address", mobile);
-            context.startActivity(sendIntent);
-        } catch (Exception e) {
-            Toast.makeText(context, "Oops! something went wrong.", Toast.LENGTH_SHORT).show();
-        }
     }
 }

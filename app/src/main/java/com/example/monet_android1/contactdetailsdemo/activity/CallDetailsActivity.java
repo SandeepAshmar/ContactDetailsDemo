@@ -30,6 +30,7 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -47,12 +48,15 @@ import java.util.Collections;
 import java.util.List;
 
 import static com.example.monet_android1.contactdetailsdemo.activity.MainActivity.myCallsAppDatabase;
+import static com.example.monet_android1.contactdetailsdemo.helper.AppUtils.callUser;
 import static com.example.monet_android1.contactdetailsdemo.helper.AppUtils.checkUnsavedNumberOnWhatsapp;
 import static com.example.monet_android1.contactdetailsdemo.helper.AppUtils.deleteContact;
 import static com.example.monet_android1.contactdetailsdemo.helper.AppUtils.getContactIDFromNumber;
 import static com.example.monet_android1.contactdetailsdemo.helper.AppUtils.getPhoto;
 import static com.example.monet_android1.contactdetailsdemo.helper.AppUtils.hasWhatsApp;
 import static com.example.monet_android1.contactdetailsdemo.helper.AppUtils.isConnectionAvailable;
+import static com.example.monet_android1.contactdetailsdemo.helper.AppUtils.sendSMS;
+import static com.example.monet_android1.contactdetailsdemo.helper.AppUtils.whatsApplicationCheck;
 
 public class CallDetailsActivity extends AppCompatActivity {
 
@@ -66,6 +70,7 @@ public class CallDetailsActivity extends AppCompatActivity {
     private CardView whatsappCard;
     private PopupMenu popupMenu;
     private CircularImageView circleImage;
+    private LinearLayout ll_call;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,6 +95,7 @@ public class CallDetailsActivity extends AppCompatActivity {
         whatsMobile = findViewById(R.id.tv_whatsAppMobile);
         recyclerView = findViewById(R.id.rv_details);
         circleImage = findViewById(R.id.img_circleDetails);
+        ll_call = findViewById(R.id.ll_call);
 
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
@@ -97,6 +103,19 @@ public class CallDetailsActivity extends AppCompatActivity {
         setActivityData();
         setAdapterData();
         handleClick();
+
+        if(whatsApplicationCheck(this)){
+            whatsappCard.setVisibility(View.VISIBLE);
+        }else{
+            whatsappCard.setVisibility(View.GONE);
+        }
+
+        if(checkNumberOnWhatsapp(Mobile)){
+            whatsappCard.setVisibility(View.VISIBLE);
+        }else{
+            whatsappCard.setVisibility(View.GONE);
+
+        }
 
         circleImage.setImageBitmap(getPhoto(Mobile, this));
 
@@ -114,7 +133,7 @@ public class CallDetailsActivity extends AppCompatActivity {
         whatsMobile.setText(Mobile);
 
         if (!Name.isEmpty()) {
-            if (checkWhatsapp(Mobile)) {
+            if (checkNumberOnWhatsapp(Mobile)) {
                 whatsappCard.setVisibility(View.VISIBLE);
             } else {
                 whatsappCard.setVisibility(View.GONE);
@@ -142,7 +161,7 @@ public class CallDetailsActivity extends AppCompatActivity {
                 if (Name.isEmpty()) {
                     checkUnsavedNumberOnWhatsapp(CallDetailsActivity.this, Mobile);
                 } else {
-                    if (checkWhatsapp(Mobile)) {
+                    if (checkNumberOnWhatsapp(Mobile)) {
                         sendMsgOnSavedWhatsappNumber(Mobile);
                     } else {
                         Toast.makeText(CallDetailsActivity.this,
@@ -162,8 +181,14 @@ public class CallDetailsActivity extends AppCompatActivity {
         call.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + Mobile));
-                startActivity(intent);
+                callUser(Mobile, CallDetailsActivity.this);
+            }
+        });
+
+        ll_call.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                callUser(Mobile, CallDetailsActivity.this);
             }
         });
 
@@ -178,7 +203,7 @@ public class CallDetailsActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 try {
-                    sendSMS(Mobile);
+                    sendSMS(Mobile, CallDetailsActivity.this);
                 } catch (Exception e) {
                     Toast.makeText(CallDetailsActivity.this, "Oops! something went wrong", Toast.LENGTH_SHORT).show();
                 }
@@ -209,7 +234,7 @@ public class CallDetailsActivity extends AppCompatActivity {
         recyclerView.hasFixedSize();
     }
 
-    private boolean checkWhatsapp(String mobile) {
+    private boolean checkNumberOnWhatsapp(String mobile) {
         String id = String.valueOf(getContactIDFromNumber(mobile, CallDetailsActivity.this));
         if (hasWhatsApp(id, CallDetailsActivity.this) == 1) {
             return true;
@@ -245,10 +270,9 @@ public class CallDetailsActivity extends AppCompatActivity {
                 if (item.getTitle().equals("Add to contact")) {
                     addNewContact(number);
                 } else if (item.getTitle().equals("Call")) {
-                    Intent intent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + number));
-                    startActivity(intent);
+                    callUser(number, CallDetailsActivity.this);
                 } else if (item.getTitle().equals("Send message")) {
-                    sendSMS(number);
+                    sendSMS(number, CallDetailsActivity.this);
                 } else if (item.getTitle().equals("delete contact")) {
                     deleteDialog();
                 } else if (item.getTitle().equals("Share contact")) {
@@ -316,31 +340,6 @@ public class CallDetailsActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         finish();
-    }
-
-    private void sendSMS(String mobile) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) // At least KitKat
-        {
-            String defaultSmsPackageName = Telephony.Sms.getDefaultSmsPackage(this); // Need to change the build to API 19
-
-            Intent sendIntent = new Intent(Intent.ACTION_SEND);
-            sendIntent.putExtra("address", mobile);
-            sendIntent.setType("text/plain");
-
-            if (defaultSmsPackageName != null)// Can be null in case that there is no default, then the user would be able to choose
-            // any app that support this intent.
-            {
-                sendIntent.setPackage(defaultSmsPackageName);
-            }
-            startActivity(sendIntent);
-
-        } else // For early versions, do what worked for you before.
-        {
-            Intent smsIntent = new Intent(android.content.Intent.ACTION_VIEW);
-            smsIntent.setType("vnd.android-dir/mms-sms");
-            smsIntent.putExtra("address", mobile);
-            startActivity(smsIntent);
-        }
     }
 
 }

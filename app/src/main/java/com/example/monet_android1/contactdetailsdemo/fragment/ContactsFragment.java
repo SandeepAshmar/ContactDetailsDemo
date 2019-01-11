@@ -23,6 +23,7 @@ import com.example.monet_android1.contactdetailsdemo.adapter.ContactsAdapter;
 import static com.example.monet_android1.contactdetailsdemo.activity.MainActivity.contactList;
 import static com.example.monet_android1.contactdetailsdemo.helper.AppUtils.checkUnsavedNumberOnWhatsapp;
 import static com.example.monet_android1.contactdetailsdemo.helper.AppUtils.hideSoftKeyboard;
+import static com.example.monet_android1.contactdetailsdemo.helper.AppUtils.whatsApplicationCheck;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -62,7 +63,11 @@ public class ContactsFragment extends Fragment {
         tv_checkContact.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                openDialog();
+                if(whatsApplicationCheck(getActivity())){
+                    openDialog();
+                }else{
+                    Toast.makeText(getActivity(), "App is not currently installed on your phone", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
@@ -100,6 +105,8 @@ public class ContactsFragment extends Fragment {
                 builder.dismiss();
             }
         });
+
+        editText.requestFocus();
 
         builder.show();
     }

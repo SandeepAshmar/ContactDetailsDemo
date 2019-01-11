@@ -42,9 +42,13 @@ public class SearchScreen extends AppCompatActivity {
         mic = findViewById(R.id.img_mic);
 
         String text = getIntent().getStringExtra("searchResult");
-        if(!text.isEmpty()){
-            search.setText(text);
-            filter(text);
+        try{
+            if(!text.isEmpty()){
+                search.setText(text);
+                filter(text);
+            }
+        }catch (Exception e){
+
         }
 
         mic.setOnClickListener(new View.OnClickListener() {

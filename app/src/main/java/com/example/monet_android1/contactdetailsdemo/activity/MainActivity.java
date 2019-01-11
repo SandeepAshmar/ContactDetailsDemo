@@ -23,6 +23,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.CardView;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -39,6 +40,7 @@ import java.util.HashSet;
 
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 import static com.example.monet_android1.contactdetailsdemo.helper.AppUtils.filterNumber;
+import static com.example.monet_android1.contactdetailsdemo.helper.AppUtils.getPhoto;
 import static com.example.monet_android1.contactdetailsdemo.helper.AppUtils.voiceSearch;
 
 
@@ -144,23 +146,16 @@ public class MainActivity extends AppCompatActivity {
         while (phones.moveToNext()) {
             String name = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
             String phoneNumber = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
-            nameList.add(name);
-            mobileList.add(filterNumber(phoneNumber));
-        }
-
-        for (int i = 0; i < nameList.size(); i++) {
-            String name = nameList.get(i);
-            String mobile = mobileList.get(i);
-            if(contactList.getName().size() == 0){
+            phoneNumber = filterNumber(phoneNumber);
+            if (contactList.getName().size() == 0) {
                 contactList.setName(name);
-                contactList.setMobile(mobile);
-            }else if(!contactList.getMobile().contains(mobile)){
+                contactList.setMobile(phoneNumber);
+            } else if (!contactList.getMobile().contains(phoneNumber)) {
                 contactList.setName(name);
-                contactList.setMobile(mobile);
+                contactList.setMobile(phoneNumber);
             }
         }
-        nameList.clear();
-        mobileList.clear();
+
         nameList.addAll(contactList.getName());
         mobileList.addAll(contactList.getMobile());
         contactList.getMobile().clear();
@@ -169,8 +164,14 @@ public class MainActivity extends AppCompatActivity {
             String name = contactList.getName().get(i);
             for (int j = 0; j < nameList.size(); j++) {
                 if (nameList.get(j).equals(name)) {
-                    contactList.setMobile(mobileList.get(j));
-                    break;
+                    if (contactList.getMobile().size() == 0) {
+                        contactList.setMobile(mobileList.get(j));
+                    } else if (!contactList.getMobile().contains(mobileList.get(j))) {
+                        contactList.setMobile(mobileList.get(j));
+                    } else {
+                        contactList.getName().remove(i);
+                        break;
+                    }
                 }
             }
         }
@@ -185,8 +186,7 @@ public class MainActivity extends AppCompatActivity {
                 Manifest.permission.READ_PHONE_STATE) + ContextCompat.checkSelfPermission(this,
                 Manifest.permission.CALL_PHONE) + ContextCompat.checkSelfPermission(this,
                 Manifest.permission.READ_CONTACTS) + ContextCompat.checkSelfPermission(this,
-                Manifest.permission.WRITE_CONTACTS) + ContextCompat.checkSelfPermission(this,
-                Manifest.permission.RECEIVE_SMS);
+                Manifest.permission.WRITE_CONTACTS);
         return result == PERMISSION_GRANTED;
     }
 
@@ -210,7 +210,7 @@ public class MainActivity extends AppCompatActivity {
         } else {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_PHONE_STATE,
                     Manifest.permission.CALL_PHONE, Manifest.permission.READ_CONTACTS,
-                    Manifest.permission.WRITE_CONTACTS, Manifest.permission.RECEIVE_SMS}, 1012);
+                    Manifest.permission.WRITE_CONTACTS}, 1012);
         }
     }
 

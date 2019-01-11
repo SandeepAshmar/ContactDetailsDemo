@@ -22,6 +22,8 @@ import com.example.monet_android1.contactdetailsdemo.user.ContactList;
 
 import java.util.Random;
 
+import static com.example.monet_android1.contactdetailsdemo.helper.AppUtils.callUser;
+
 public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.Viewholder> {
 
     private Context context;
@@ -42,25 +44,18 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.Viewholder
 
     @Override
     public void onBindViewHolder(@NonNull Viewholder holder, final int position) {
-            generateRandomNumber(holder);
-            holder.name.setText(list.getName().get(position));
-            String text = String.valueOf(holder.name.getText().charAt(0));
-            holder.id.setText(text.toUpperCase());
-            holder.mobile.setText(list.getMobile().get(position));
+        generateRandomNumber(holder);
+        holder.name.setText(list.getName().get(position));
+        String text = String.valueOf(holder.name.getText().charAt(0));
+        holder.id.setText(text.toUpperCase());
+        holder.mobile.setText(list.getMobile().get(position));
 
-            holder.itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (ActivityCompat.checkSelfPermission(context,
-                            Manifest.permission.CALL_PHONE) == PackageManager.PERMISSION_GRANTED) {
-                        Intent callIntent = new Intent(Intent.ACTION_CALL);
-                        callIntent.setData(Uri.parse("tel:" + list.getMobile().get(position)));
-                        context.startActivity(callIntent);
-                    } else {
-                        Toast.makeText(context, "You don't assign permission.", Toast.LENGTH_SHORT).show();
-                    }
-                }
-            });
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                callUser(list.getMobile().get(position), context);
+            }
+        });
     }
 
     @Override
@@ -70,6 +65,7 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.Viewholder
 
     public class Viewholder extends RecyclerView.ViewHolder {
         private TextView id, name, mobile;
+
         public Viewholder(@NonNull View itemView) {
             super(itemView);
             id = itemView.findViewById(R.id.tv_contactId);
