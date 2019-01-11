@@ -33,6 +33,7 @@ import java.util.List;
 
 import static com.example.monet_android1.contactdetailsdemo.activity.MainActivity.contactList;
 import static com.example.monet_android1.contactdetailsdemo.activity.MainActivity.myCallsAppDatabase;
+import static com.example.monet_android1.contactdetailsdemo.helper.AppUtils.filterNumber;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -43,7 +44,6 @@ public class CallDetailsFragment extends Fragment {
     private GridLayoutManager layoutManager;
     private static CallLogAdapter adapter;
     private static TextView tv_noCalls;
-    private boolean isReverse = true;
     private CallDetails callDetails = new CallDetails();
 
     private CallClickListner callClickListner = new CallClickListner() {
@@ -73,19 +73,10 @@ public class CallDetailsFragment extends Fragment {
         callDetails.getName().clear();
         try {
             List<CallLog> callLogs = myCallsAppDatabase.myCallDao().getCallDetials();
+            Collections.reverse(callLogs);
             for (int i = 0; i < callLogs.size(); i++) {
                 String allMobile = callLogs.get(i).getMobile();
-                allMobile = allMobile.replace(" ", "");
-                allMobile = allMobile.replace("-", "");
-                allMobile = allMobile.replace("(", "");
-                allMobile = allMobile.replace(")", "");
-                allMobile = allMobile.replace("+91", "");
-                if (allMobile.length() == 12) {
-                    Log.d("TAG", "getName: 12 number " + allMobile);
-                    StringBuilder str = new StringBuilder(allMobile);
-                    str.delete(0, 2);
-                    allMobile = str.toString();
-                }
+                allMobile = filterNumber(allMobile);
                 if (callDetails.getMobile().size() == 0 && callDetails.getName().size() == 0) {
                     getName(allMobile);
                     callDetails.setMobile(allMobile);
@@ -97,12 +88,6 @@ public class CallDetailsFragment extends Fragment {
 
                 }
 
-            }
-
-            if (isReverse) {
-                Collections.reverse(callDetails.getMobile());
-                Collections.reverse(callDetails.getName());
-                isReverse = false;
             }
             adapter = new CallLogAdapter(context, callDetails, callClickListner);
             rv_calls.setAdapter(adapter);
@@ -123,15 +108,9 @@ public class CallDetailsFragment extends Fragment {
     protected void getName(String number) {
 
         String name = "";
-        if (number.length() == 12) {
-            Log.d("TAG", "getName: 12 number " + number);
-            StringBuilder str = new StringBuilder(number);
-            str.delete(0, 2);
-            number = str.toString();
-        }
         for (int i = 0; i < contactList.getMobile().size(); i++) {
             String mobile = contactList.getMobile().get(i);
-            if (mobile.contains(number)) {
+            if (mobile.equals(number)) {
                 name = contactList.getName().get(i);
             }
         }

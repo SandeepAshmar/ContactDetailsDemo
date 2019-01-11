@@ -35,6 +35,7 @@ import java.util.Collections;
 import java.util.HashSet;
 
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
+import static com.example.monet_android1.contactdetailsdemo.helper.AppUtils.filterNumber;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -113,21 +114,27 @@ public class MainActivity extends AppCompatActivity {
         while (phones.moveToNext()) {
             String name = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
             String phoneNumber = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
-            phoneNumber = phoneNumber.replace(" ", "");
-            phoneNumber = phoneNumber.replace("-", "");
-            phoneNumber = phoneNumber.replace("(", "");
-            phoneNumber = phoneNumber.replace(")", "");
-            phoneNumber = phoneNumber.replace("+91", "");
             nameList.add(name);
-            contactList.setName(name);
-            mobileList.add(phoneNumber);
+            mobileList.add(filterNumber(phoneNumber));
         }
-        HashSet<String> nameHashSet = new HashSet<String>();
-        nameHashSet.addAll(contactList.getName());
-        contactList.getName().clear();
-        contactList.getName().addAll(nameHashSet);
-        Collections.sort(contactList.getName(), String.CASE_INSENSITIVE_ORDER);
 
+        for (int i = 0; i < nameList.size(); i++) {
+            String name = nameList.get(i);
+            String mobile = mobileList.get(i);
+            if(contactList.getName().size() == 0){
+                contactList.setName(name);
+                contactList.setMobile(mobile);
+            }else if(!contactList.getMobile().contains(mobile)){
+                contactList.setName(name);
+                contactList.setMobile(mobile);
+            }
+        }
+        nameList.clear();
+        mobileList.clear();
+        nameList.addAll(contactList.getName());
+        mobileList.addAll(contactList.getMobile());
+        contactList.getMobile().clear();
+        Collections.sort(contactList.getName(), String.CASE_INSENSITIVE_ORDER);
         for (int i = 0; i < contactList.getName().size(); i++) {
             String name = contactList.getName().get(i);
             for (int j = 0; j < nameList.size(); j++) {
@@ -137,24 +144,6 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         }
-
-        int count = 0;
-        for (int i = 0; i < contactList.getMobile().size(); i++) {
-            String mobile = contactList.getMobile().get(i);
-            for (int j = 0; j < contactList.getMobile().size(); j++) {
-                if (contactList.getMobile().get(j).contains(mobile)) {
-                    count = count + 1;
-                    if (count >= 2) {
-                        contactList.getMobile().remove(i);
-                        contactList.getName().remove(i);
-                        count = 0;
-                    }
-                } else {
-                    count = 0;
-                }
-            }
-        }
-
 
         phones.close();
         nameList.clear();
@@ -166,7 +155,7 @@ public class MainActivity extends AppCompatActivity {
                 Manifest.permission.READ_PHONE_STATE) + ContextCompat.checkSelfPermission(this,
                 Manifest.permission.CALL_PHONE) + ContextCompat.checkSelfPermission(this,
                 Manifest.permission.READ_CONTACTS) + ContextCompat.checkSelfPermission(this,
-                Manifest.permission.WRITE_CONTACTS)+ ContextCompat.checkSelfPermission(this,
+                Manifest.permission.WRITE_CONTACTS) + ContextCompat.checkSelfPermission(this,
                 Manifest.permission.RECEIVE_SMS);
         return result == PERMISSION_GRANTED;
     }

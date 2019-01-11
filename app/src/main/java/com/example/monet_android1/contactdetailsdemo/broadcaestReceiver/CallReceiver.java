@@ -17,6 +17,8 @@ import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import static com.example.monet_android1.contactdetailsdemo.helper.AppUtils.filterNumber;
+
 public class CallReceiver extends BroadcastReceiver {
 
     private static int lastState = TelephonyManager.CALL_STATE_IDLE;
@@ -120,23 +122,11 @@ public class CallReceiver extends BroadcastReceiver {
                 .build();
 
         number = intent.getExtras().getString(TelephonyManager.EXTRA_INCOMING_NUMBER);
-        number = number.replace(" ", "");
-        number = number.replace("-", "");
-        number = number.replace("(", "");
-        number = number.replace(")", "");
-        number = number.replace("+91", "");
-        if(number.length() == 12){
-            number.substring(2);
-        }
+        number = filterNumber(number);
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss aaa");
         String dateString = dateFormat.format(new Date(System.currentTimeMillis()));
         CallLog callLog = new CallLog();
-        if(number == null){
-            callLog.setMobile("112");
-        }else{
-            callLog.setMobile(number);
-        }
-
+        callLog.setMobile(number);
         callLog.setCallType(callType);
         callLog.setTime(dateString);
         myCallsAppDatabase.myCallDao().addCallDetails(callLog);

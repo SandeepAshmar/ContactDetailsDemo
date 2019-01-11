@@ -1,6 +1,8 @@
 package com.example.monet_android1.contactdetailsdemo.fragment;
 
 
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -11,19 +13,24 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.monet_android1.contactdetailsdemo.R;
 import com.example.monet_android1.contactdetailsdemo.adapter.ContactsAdapter;
 
 import static com.example.monet_android1.contactdetailsdemo.activity.MainActivity.contactList;
+import static com.example.monet_android1.contactdetailsdemo.helper.AppUtils.checkUnsavedNumberOnWhatsapp;
+import static com.example.monet_android1.contactdetailsdemo.helper.AppUtils.hideSoftKeyboard;
 
 /**
  * A simple {@link Fragment} subclass.
  */
 public class ContactsFragment extends Fragment {
 
-    private static TextView tv_noContact, tv_addContact;
+    private static TextView tv_noContact, tv_addContact, tv_checkContact;
     private static RecyclerView recyclerView;
     private LinearLayoutManager layoutManager;
     private static ContactsAdapter contactsAdapter;
@@ -41,6 +48,7 @@ public class ContactsFragment extends Fragment {
         tv_noContact = view.findViewById(R.id.tv_noContact);
         tv_addContact = view.findViewById(R.id.tv_addContact);
         recyclerView = view.findViewById(R.id.rv_contacts);
+        tv_checkContact = view.findViewById(R.id.tv_checkContact);
         layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
         readFromDb(getActivity());
@@ -52,6 +60,49 @@ public class ContactsFragment extends Fragment {
             }
         });
 
+        tv_checkContact.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openDialog();
+            }
+        });
+
+    }
+
+    private void openDialog() {
+        final Dialog builder = new Dialog(getActivity(), R.style.DialogTheme);
+        builder.setContentView(R.layout.check_whatsapp);
+        builder.setCancelable(false);
+
+        Button search, cancel;
+        final EditText editText = builder.findViewById(R.id.edt_whatsappSearch);
+        search = builder.findViewById(R.id.btn_search);
+        cancel = builder.findViewById(R.id.btn_cancel);
+
+        search.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(editText.getText().toString().length() != 10){
+                    Toast.makeText(getContext(), "Please enter a valid mobile number", Toast.LENGTH_SHORT).show();
+                }else{
+                    if (checkUnsavedNumberOnWhatsapp(getActivity(), editText.getText().toString()).equals("no")){
+                        Toast.makeText(getActivity(), "Please enter a valid mobile number", Toast.LENGTH_SHORT).show();
+                    }else{
+                        hideSoftKeyboard(getActivity());
+                        builder.dismiss();
+                    }
+                }
+            }
+        });
+
+        cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                builder.dismiss();
+            }
+        });
+
+        builder.show();
     }
 
     public void readFromDb(Context context) {

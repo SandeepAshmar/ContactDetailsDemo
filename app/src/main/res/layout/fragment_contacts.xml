@@ -30,6 +30,27 @@
         android:layout_marginTop="5dp"
         android:background="@android:color/black"/>
 
+    <TextView
+        android:id="@+id/tv_checkContact"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="15dp"
+        android:layout_marginTop="15dp"
+        android:layout_marginBottom="10dp"
+        android:textSize="16sp"
+        android:layout_below="@id/tv_addContact"
+        android:text="         Check any mobile number on whatsapp"
+        android:drawableLeft="@drawable/ic_whatsapp"
+        android:gravity="center_vertical"
+        android:textColor="@color/colorPrimaryDark"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height=".3dp"
+        android:layout_below="@id/tv_checkContact"
+        android:layout_marginTop="5dp"
+        android:background="@android:color/black"/>
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/rv_contacts"
         android:layout_width="match_parent"
@@ -38,7 +59,7 @@
         android:layout_marginTop="5dp"
         android:scrollbars="vertical"
         android:scrollbarSize="5dp"
-        android:layout_below="@id/tv_addContact"/>
+        android:layout_below="@id/tv_checkContact"/>
 
     <TextView
         android:id="@+id/tv_noContact"
