@@ -19,6 +19,9 @@ import android.widget.Toast;
 
 import com.example.monet_android1.contactdetailsdemo.R;
 import com.example.monet_android1.contactdetailsdemo.adapter.ContactsAdapter;
+import com.example.monet_android1.contactdetailsdemo.adapter.RecyclerSectionItemDecoration;
+
+import java.util.ArrayList;
 
 import static com.example.monet_android1.contactdetailsdemo.activity.MainActivity.contactList;
 import static com.example.monet_android1.contactdetailsdemo.helper.AppUtils.checkUnsavedNumberOnWhatsapp;
@@ -113,6 +116,11 @@ public class ContactsFragment extends Fragment {
 
     public void readFromDb(Context context) {
 
+        RecyclerSectionItemDecoration sectionItemDecoration =
+                new RecyclerSectionItemDecoration(0,
+                        true, getSectionCallback(contactList.getName()));
+        recyclerView.addItemDecoration(sectionItemDecoration);
+
         contactsAdapter = new ContactsAdapter(context, contactList);
         recyclerView.setAdapter(contactsAdapter);
         contactsAdapter.notifyDataSetChanged();
@@ -123,6 +131,25 @@ public class ContactsFragment extends Fragment {
             recyclerView.setVisibility(View.GONE);
             tv_noContact.setVisibility(View.VISIBLE);
         }
+    }
+
+    private RecyclerSectionItemDecoration.SectionCallback getSectionCallback(final ArrayList<String> people) {
+        return new RecyclerSectionItemDecoration.SectionCallback() {
+            @Override
+            public boolean isSection(int position) {
+                return position == 0
+                        || people.get(position).toUpperCase()
+                        .charAt(0) != people.get(position - 1).toUpperCase()
+                        .charAt(0);
+            }
+
+            @Override
+            public CharSequence getSectionHeader(int position) {
+                return people.get(position).toUpperCase()
+                        .subSequence(0,
+                                1);
+            }
+        };
     }
 
     public void addNewContact() {

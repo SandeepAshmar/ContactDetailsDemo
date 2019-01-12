@@ -1,9 +1,11 @@
 package com.example.monet_android1.contactdetailsdemo.helper;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.ContentProviderOperation;
+import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
@@ -29,6 +31,7 @@ import com.example.monet_android1.contactdetailsdemo.activity.SearchScreen;
 import java.io.ByteArrayInputStream;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Random;
 
 public class AppUtils {
@@ -263,5 +266,46 @@ public class AppUtils {
                 .withValue(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME, name)
                 .build());
         act.getContentResolver().applyBatch(ContactsContract.AUTHORITY, ops);
+    }
+
+    @SuppressLint("NewApi")
+    public void getAllSms(Context context) {
+
+        ContentResolver cr = context.getContentResolver();
+        Cursor c = cr.query(Telephony.Sms.CONTENT_URI, null, null, null, null);
+        int totalSMS = 0;
+        if (c != null) {
+            totalSMS = c.getCount();
+            if (c.moveToFirst()) {
+                for (int j = 0; j < totalSMS; j++) {
+                    String smsDate = c.getString(c.getColumnIndexOrThrow(Telephony.Sms.DATE));
+                    String number = c.getString(c.getColumnIndexOrThrow(Telephony.Sms.ADDRESS));
+                    String body = c.getString(c.getColumnIndexOrThrow(Telephony.Sms.BODY));
+                    Date dateFormat= new Date(Long.valueOf(smsDate));
+                    String type;
+                    switch (Integer.parseInt(c.getString(c.getColumnIndexOrThrow(Telephony.Sms.TYPE)))) {
+                        case Telephony.Sms.MESSAGE_TYPE_INBOX:
+                            type = "inbox";
+                            break;
+                        case Telephony.Sms.MESSAGE_TYPE_SENT:
+                            type = "sent";
+                            break;
+                        case Telephony.Sms.MESSAGE_TYPE_OUTBOX:
+                            type = "outbox";
+                            break;
+                        default:
+                            break;
+                    }
+
+
+                    c.moveToNext();
+                }
+            }
+
+            c.close();
+
+        } else {
+            Toast.makeText(context, "No message to show!", Toast.LENGTH_SHORT).show();
+        }
     }
 }
