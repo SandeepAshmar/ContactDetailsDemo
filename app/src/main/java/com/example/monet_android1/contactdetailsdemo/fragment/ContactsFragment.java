@@ -1,6 +1,7 @@
 package com.example.monet_android1.contactdetailsdemo.fragment;
 
 
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
@@ -47,6 +48,7 @@ public class ContactsFragment extends Fragment {
         return view;
     }
 
+    @SuppressLint("NewApi")
     private void initView(View view){
         tv_noContact = view.findViewById(R.id.tv_noContact);
         tv_addContact = view.findViewById(R.id.tv_addContact);
@@ -54,7 +56,10 @@ public class ContactsFragment extends Fragment {
         tv_checkContact = view.findViewById(R.id.tv_checkContact);
         layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
+        recyclerView.hasFixedSize();
         readFromDb(getActivity());
+
+        recyclerView.setTouchscreenBlocksFocus(true);
 
         tv_addContact.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -139,7 +144,7 @@ public class ContactsFragment extends Fragment {
             public boolean isSection(int position) {
                 return position == 0
                         || people.get(position).toUpperCase()
-                        .charAt(0) != people.get(position - 1).toUpperCase()
+                        .charAt(0) != people.get(position).toUpperCase()
                         .charAt(0);
             }
 

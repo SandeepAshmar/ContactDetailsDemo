@@ -13,6 +13,7 @@ import android.text.TextWatcher;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.monet_android1.contactdetailsdemo.R;
@@ -21,6 +22,7 @@ import com.example.monet_android1.contactdetailsdemo.adapter.SearchAdapter;
 import com.example.monet_android1.contactdetailsdemo.user.ContactList;
 
 import static com.example.monet_android1.contactdetailsdemo.activity.MainActivity.contactList;
+import static com.example.monet_android1.contactdetailsdemo.helper.AppUtils.hideSoftKeyboard;
 import static com.example.monet_android1.contactdetailsdemo.helper.AppUtils.voiceSearch;
 
 public class SearchScreen extends AppCompatActivity {
@@ -30,6 +32,7 @@ public class SearchScreen extends AppCompatActivity {
     private SearchAdapter searchAdapter;
     private LinearLayoutManager layoutManager;
     private ImageView back, mic;
+    private TextView noData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,12 +43,14 @@ public class SearchScreen extends AppCompatActivity {
         recyclerView = findViewById(R.id.rv_search);
         back = findViewById(R.id.img_searchBack);
         mic = findViewById(R.id.img_mic);
+        noData = findViewById(R.id.tv_seachNoData);
 
         String text = getIntent().getStringExtra("searchResult");
         try{
             if(!text.isEmpty()){
                 search.setText(text);
                 filter(text);
+
             }
         }catch (Exception e){
 
@@ -96,6 +101,7 @@ public class SearchScreen extends AppCompatActivity {
             case 1: {
                 if (resultCode == Activity.RESULT_OK && null != data) {
                     String yourResult = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS).get(0);
+                    search.setText(yourResult);
                     filter(yourResult);
                 }
                 break;
@@ -126,9 +132,20 @@ public class SearchScreen extends AppCompatActivity {
     }
 
     public void updateList(ContactList list) {
-        recyclerView.setVisibility(View.VISIBLE);
-        searchAdapter = new SearchAdapter(this, list);
-        recyclerView.setAdapter(searchAdapter);
-        searchAdapter.notifyDataSetChanged();
+        if(search.getText().length() == 0){
+            noData.setText("Please enter valid text to serach contact");
+            noData.setVisibility(View.VISIBLE);
+            recyclerView.setVisibility(View.GONE);
+        }else if(list.getName().size() == 0){
+            noData.setText("No matches found");
+            noData.setVisibility(View.VISIBLE);
+            recyclerView.setVisibility(View.GONE);
+        }else{
+            noData.setVisibility(View.GONE);
+            recyclerView.setVisibility(View.VISIBLE);
+            searchAdapter = new SearchAdapter(this, list);
+            recyclerView.setAdapter(searchAdapter);
+            searchAdapter.notifyDataSetChanged();
+        }
     }
 }

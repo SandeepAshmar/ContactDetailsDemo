@@ -1,72 +1,97 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:focusable="true"
-    android:focusableInTouchMode="true"
-    tools:context=".fragment.ContactsFragment"
-    android:foreground="?android:selectableItemBackground"
-    android:clickable="true">
+    tools:context=".fragment.ContactsFragment">
 
-    <TextView
-        android:id="@+id/tv_addContact"
-        android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:layout_marginLeft="15dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="5dp"
-        android:textSize="16sp"
-        android:text="         New Contact"
-        android:drawableLeft="@drawable/ic_person_add_24dp"
-        android:gravity="center_vertical"
-        android:textColor="@color/colorPrimaryDark"/>
+        <android.support.design.widget.AppBarLayout
+            android:id="@+id/appBarLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/white">
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height=".3dp"
-        android:layout_below="@id/tv_addContact"
-        android:layout_marginTop="5dp"
-        android:background="@android:color/black"/>
+            <android.support.design.widget.CollapsingToolbarLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:layout_scrollFlags="scroll|enterAlways">
 
-    <TextView
-        android:id="@+id/tv_checkContact"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="15dp"
-        android:layout_marginTop="15dp"
-        android:layout_marginBottom="10dp"
-        android:textSize="16sp"
-        android:layout_below="@id/tv_addContact"
-        android:text="         Check any mobile number on whatsapp"
-        android:drawableLeft="@drawable/ic_whatsapp"
-        android:gravity="center_vertical"
-        android:textColor="@color/colorPrimaryDark"/>
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:layout_collapseMode="parallax">
 
-    <View
-        android:id="@+id/belowLine"
-        android:layout_width="match_parent"
-        android:layout_height=".3dp"
-        android:layout_below="@id/tv_checkContact"
-        android:layout_marginTop="5dp"
-        android:background="@android:color/black"/>
+                    <TextView
+                        android:id="@+id/tv_addContact"
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp"
+                        android:layout_marginLeft="15dp"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginBottom="5dp"
+                        android:drawableLeft="@drawable/ic_person_add_24dp"
+                        android:gravity="center_vertical"
+                        android:text="         New Contact"
+                        android:textColor="@color/colorPrimaryDark"
+                        android:textSize="16sp" />
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/rv_contacts"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:visibility="gone"
-        android:scrollbars="vertical"
-        android:layout_below="@id/belowLine"/>
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height=".3dp"
+                        android:layout_below="@id/tv_addContact"
+                        android:layout_marginTop="5dp"
+                        android:background="@android:color/black" />
 
-    <TextView
-        android:id="@+id/tv_noContact"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:text="No Contact Found"
-        android:textColor="@android:color/black"
-        android:textSize="20sp"/>
+                    <TextView
+                        android:id="@+id/tv_checkContact"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/tv_addContact"
+                        android:layout_marginLeft="15dp"
+                        android:layout_marginTop="15dp"
+                        android:layout_marginBottom="10dp"
+                        android:drawableLeft="@drawable/ic_whatsapp"
+                        android:gravity="center_vertical"
+                        android:text="         Check any mobile number on whatsapp"
+                        android:textColor="@color/colorPrimaryDark"
+                        android:textSize="16sp" />
 
-</RelativeLayout>
+                    <View
+                        android:id="@+id/belowLine"
+                        android:layout_width="match_parent"
+                        android:layout_height=".3dp"
+                        android:layout_below="@id/tv_checkContact"
+                        android:layout_marginTop="5dp"
+                        android:background="@android:color/black" />
+
+
+                </RelativeLayout>
+
+            </android.support.design.widget.CollapsingToolbarLayout>
+
+        </android.support.design.widget.AppBarLayout>
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/rv_contacts"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_behavior="@string/appbar_scrolling_view_behavior"
+                android:visibility="gone"
+                app:fastScrollEnabled="true"
+                app:fastScrollHorizontalThumbDrawable="@drawable/thumb_drawable"
+                app:fastScrollHorizontalTrackDrawable="@drawable/line_drawable"
+                app:fastScrollVerticalThumbDrawable="@drawable/thumb_drawable"
+                app:fastScrollVerticalTrackDrawable="@drawable/line_drawable"
+                android:layout_marginRight="10dp"/>
+
+            <TextView
+                android:id="@+id/tv_noContact"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="No Contact Found"
+                android:layout_gravity="center"
+                app:layout_behavior="@string/appbar_scrolling_view_behavior"
+                android:textColor="@android:color/black"
+                android:textSize="20sp" />
+
+</android.support.design.widget.CoordinatorLayout>
