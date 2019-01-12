@@ -110,11 +110,10 @@ public class CallDetailsActivity extends AppCompatActivity {
             whatsappCard.setVisibility(View.GONE);
         }
 
-        if(checkNumberOnWhatsapp(Mobile)){
+        if(Mobile.length() == 10){
             whatsappCard.setVisibility(View.VISIBLE);
         }else{
             whatsappCard.setVisibility(View.GONE);
-
         }
 
         circleImage.setImageBitmap(getPhoto(Mobile, this));

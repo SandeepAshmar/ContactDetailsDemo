@@ -110,7 +110,7 @@ public class AppUtils {
     }
 
     public static String checkUnsavedNumberOnWhatsapp(Context context, String mobile) {
-        String close = "";
+        String send = "";
         if(isConnectionAvailable(context)){
             String upToNCharacters = mobile.substring(0, Math.min(mobile.length(), 1));
             if (upToNCharacters.equals("9") || upToNCharacters.equals("8") ||
@@ -125,20 +125,21 @@ public class AppUtils {
                     i.setData(Uri.parse(url));
                     if (i.resolveActivity(packageManager) != null) {
                         context.startActivity(i);
+                        send = "done";
                     }
                 } catch (Exception e) {
-                    e.printStackTrace();
-                    Toast.makeText(context, "" + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    send = "exception";
+                    Toast.makeText(context, "Oops! something went wrong", Toast.LENGTH_SHORT).show();
                 }
             }else{
-                close = "no";
+                send = "not valid";
                 Toast.makeText(context, "Please enter a valid mobile number", Toast.LENGTH_SHORT).show();
             }
         }else{
-            close = "no";
+            send = "internet";
             Toast.makeText(context, "Please check your internet connection", Toast.LENGTH_SHORT).show();
         }
-        return close;
+        return send;
     }
 
     public static boolean whatsApplicationCheck(Context context) {

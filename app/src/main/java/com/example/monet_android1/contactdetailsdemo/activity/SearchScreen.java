@@ -45,6 +45,8 @@ public class SearchScreen extends AppCompatActivity {
         mic = findViewById(R.id.img_mic);
         noData = findViewById(R.id.tv_seachNoData);
 
+        search.requestFocus();
+
         String text = getIntent().getStringExtra("searchResult");
         try{
             if(!text.isEmpty()){

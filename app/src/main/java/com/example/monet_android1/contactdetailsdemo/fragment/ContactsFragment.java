@@ -49,14 +49,14 @@ public class ContactsFragment extends Fragment {
     }
 
     @SuppressLint("NewApi")
-    private void initView(View view){
+    private void initView(View view) {
         tv_noContact = view.findViewById(R.id.tv_noContact);
         tv_addContact = view.findViewById(R.id.tv_addContact);
         recyclerView = view.findViewById(R.id.rv_contacts);
         tv_checkContact = view.findViewById(R.id.tv_checkContact);
         layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
-        recyclerView.hasFixedSize();
+        recyclerView.setHasFixedSize(false);
         readFromDb(getActivity());
 
         recyclerView.setTouchscreenBlocksFocus(true);
@@ -71,9 +71,9 @@ public class ContactsFragment extends Fragment {
         tv_checkContact.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(whatsApplicationCheck(getActivity())){
+                if (whatsApplicationCheck(getActivity())) {
                     openDialog();
-                }else{
+                } else {
                     Toast.makeText(getActivity(), "App is not currently installed on your phone", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -94,12 +94,10 @@ public class ContactsFragment extends Fragment {
         search.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(editText.getText().toString().length() != 10){
+                if (editText.getText().toString().length() != 10) {
                     Toast.makeText(getContext(), "Please enter a valid mobile number", Toast.LENGTH_SHORT).show();
-                }else{
-                    if (checkUnsavedNumberOnWhatsapp(getActivity(), editText.getText().toString()).equals("no")){
-                        Toast.makeText(getActivity(), "Please enter a valid mobile number", Toast.LENGTH_SHORT).show();
-                    }else{
+                } else {
+                    if (checkUnsavedNumberOnWhatsapp(getActivity(), editText.getText().toString()).equals("done")) {
                         hideSoftKeyboard(getActivity());
                         builder.dismiss();
                     }
@@ -114,8 +112,6 @@ public class ContactsFragment extends Fragment {
             }
         });
 
-        editText.requestFocus();
-
         builder.show();
     }
 
@@ -129,10 +125,10 @@ public class ContactsFragment extends Fragment {
         contactsAdapter = new ContactsAdapter(context, contactList);
         recyclerView.setAdapter(contactsAdapter);
         contactsAdapter.notifyDataSetChanged();
-        if(contactList.getName().size()>0){
+        if (contactList.getName().size() > 0) {
             recyclerView.setVisibility(View.VISIBLE);
             tv_noContact.setVisibility(View.GONE);
-        }else{
+        } else {
             recyclerView.setVisibility(View.GONE);
             tv_noContact.setVisibility(View.VISIBLE);
         }
