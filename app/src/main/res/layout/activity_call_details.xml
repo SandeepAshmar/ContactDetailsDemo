@@ -54,23 +54,26 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="@android:color/white"
-        android:layout_marginTop="125dp"
+        android:layout_marginTop="150dp"
         android:layout_marginLeft="10dp"/>
 
-    <TextView
-        android:id="@+id/tv_detMobile"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="@android:color/white"
-        android:layout_below="@id/tv_detName"
-        android:layout_marginTop="5dp"
-        android:layout_marginLeft="10dp"/>
+    <!--<TextView-->
+        <!--android:id="@+id/tv_detMobile"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:textColor="@android:color/white"-->
+        <!--android:layout_below="@id/tv_detName"-->
+        <!--android:layout_marginTop="5dp"-->
+        <!--android:layout_marginLeft="10dp"/>-->
 
     <android.support.v7.widget.CardView
         android:id="@+id/card"
         android:layout_width="match_parent"
         android:layout_height="60dp"
-        android:layout_margin="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp"
         android:layout_below="@id/img_color">
 
         <RelativeLayout
@@ -92,22 +95,23 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
+
+                android:layout_margin="5dp"
                 android:layout_toRightOf="@+id/img_cardCall"
-                android:layout_toLeftOf="@+id/img_cardMsg"
+                android:layout_toLeftOf="@+id/img_whatapp"
                 android:layout_centerVertical="true">
 
                 <TextView
                     android:id="@+id/tv_cardName"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_margin="5dp"
+                    android:text="Mobile"
                     android:textColor="@android:color/black"/>
 
                 <TextView
                     android:id="@+id/tv_cardMobile"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="5dp"
                     android:textColor="@android:color/black"/>
 
             </LinearLayout>
@@ -122,55 +126,14 @@
                 android:src="@drawable/ic_message_24dp"
                 android:layout_alignParentRight="true" />
 
-        </RelativeLayout>
-
-    </android.support.v7.widget.CardView>
-
-    <android.support.v7.widget.CardView
-        android:id="@+id/whatsappCard"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:layout_below="@id/card">
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp">
-
             <ImageView
                 android:id="@+id/img_whatapp"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
-                android:layout_centerVertical="true"
                 android:padding="8dp"
-                android:layout_alignParentStart="true"
                 android:src="@drawable/ic_whatsapp"
-                android:layout_alignParentLeft="true" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_toRightOf="@+id/img_whatapp"
-                android:layout_centerVertical="true">
-
-                <TextView
-                    android:id="@+id/tv_whatsAppName"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="5dp"
-                    android:textColor="@android:color/black"/>
-
-                <TextView
-                    android:id="@+id/tv_whatsAppMobile"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="5dp"
-                    android:textColor="@android:color/black"/>
-
-            </LinearLayout>
+                android:layout_toLeftOf="@id/img_cardMsg"
+                android:layout_centerVertical="true"/>
 
         </RelativeLayout>
 
@@ -179,8 +142,9 @@
     <android.support.v7.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/whatsappCard"
-        android:layout_margin="10dp">
+        android:layout_below="@id/card"
+        android:layout_marginRight="10dp"
+        android:layout_marginLeft="10dp">
 
         <LinearLayout
             android:layout_width="match_parent"

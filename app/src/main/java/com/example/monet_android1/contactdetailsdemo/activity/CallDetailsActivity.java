@@ -54,20 +54,18 @@ import static com.example.monet_android1.contactdetailsdemo.helper.AppUtils.dele
 import static com.example.monet_android1.contactdetailsdemo.helper.AppUtils.getContactIDFromNumber;
 import static com.example.monet_android1.contactdetailsdemo.helper.AppUtils.getPhoto;
 import static com.example.monet_android1.contactdetailsdemo.helper.AppUtils.hasWhatsApp;
-import static com.example.monet_android1.contactdetailsdemo.helper.AppUtils.isConnectionAvailable;
 import static com.example.monet_android1.contactdetailsdemo.helper.AppUtils.sendSMS;
 import static com.example.monet_android1.contactdetailsdemo.helper.AppUtils.whatsApplicationCheck;
 
 public class CallDetailsActivity extends AppCompatActivity {
 
-    private ImageView back, call, color, add, msg;
-    private TextView name, mobile, cardName, cardMobile, recent, whatsName, whatsMobile;
+    private ImageView back, call, color, add, msg, whatsapp;
+    private TextView name, mobile, cardName, cardMobile, recent;
     private RecyclerView recyclerView;
     private LinearLayoutManager layoutManager;
     private CallDetailsAdapter adapter;
     private String Name = "", Mobile = "", ColorName = "";
     private UserCallDetails userCallDetails = new UserCallDetails();
-    private CardView whatsappCard;
     private PopupMenu popupMenu;
     private CircularImageView circleImage;
     private LinearLayout ll_call;
@@ -84,18 +82,15 @@ public class CallDetailsActivity extends AppCompatActivity {
         call = findViewById(R.id.img_cardCall);
         color = findViewById(R.id.img_color);
         name = findViewById(R.id.tv_detName);
-        mobile = findViewById(R.id.tv_detMobile);
         cardName = findViewById(R.id.tv_cardName);
         cardMobile = findViewById(R.id.tv_cardMobile);
         add = findViewById(R.id.img_Add);
         msg = findViewById(R.id.img_cardMsg);
         recent = findViewById(R.id.tv_recent);
-        whatsappCard = findViewById(R.id.whatsappCard);
-        whatsName = findViewById(R.id.tv_whatsAppName);
-        whatsMobile = findViewById(R.id.tv_whatsAppMobile);
         recyclerView = findViewById(R.id.rv_details);
         circleImage = findViewById(R.id.img_circleDetails);
         ll_call = findViewById(R.id.ll_call);
+        whatsapp = findViewById(R.id.img_whatapp);
 
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
@@ -105,15 +100,15 @@ public class CallDetailsActivity extends AppCompatActivity {
         handleClick();
 
         if(whatsApplicationCheck(this)){
-            whatsappCard.setVisibility(View.VISIBLE);
+            whatsapp.setVisibility(View.VISIBLE);
         }else{
-            whatsappCard.setVisibility(View.GONE);
+            whatsapp.setVisibility(View.GONE);
         }
 
         if(Mobile.length() == 10){
-            whatsappCard.setVisibility(View.VISIBLE);
+            whatsapp.setVisibility(View.VISIBLE);
         }else{
-            whatsappCard.setVisibility(View.GONE);
+            whatsapp.setVisibility(View.GONE);
         }
 
         circleImage.setImageBitmap(getPhoto(Mobile, this));
@@ -128,33 +123,27 @@ public class CallDetailsActivity extends AppCompatActivity {
         recent.setTextColor(Color.parseColor(ColorName));
 
         popupMenu = new PopupMenu(this, add);
-        whatsName.setText(Name);
-        whatsMobile.setText(Mobile);
 
         if (!Name.isEmpty()) {
             if (checkNumberOnWhatsapp(Mobile)) {
-                whatsappCard.setVisibility(View.VISIBLE);
+                whatsapp.setVisibility(View.VISIBLE);
             } else {
-                whatsappCard.setVisibility(View.GONE);
+                whatsapp.setVisibility(View.GONE);
             }
         }
 
         if (Name.isEmpty()) {
-            cardName.setText("Add New Contact");
-            name.setText("Add New Contact");
-            whatsName.setText("Click here to check for whatsapp account availability");
+            name.setText(Mobile);
         } else {
             name.setText(Name);
-            cardName.setText(Name);
         }
 
-        mobile.setText(Mobile);
         cardMobile.setText(Mobile);
 
     }
 
     private void handleClick() {
-        whatsappCard.setOnClickListener(new View.OnClickListener() {
+        whatsapp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (Name.isEmpty()) {

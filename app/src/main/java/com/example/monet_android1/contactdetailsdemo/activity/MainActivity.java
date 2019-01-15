@@ -1,6 +1,7 @@
 package com.example.monet_android1.contactdetailsdemo.activity;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.arch.persistence.room.Room;
 import android.content.BroadcastReceiver;
@@ -15,6 +16,8 @@ import android.provider.ContactsContract;
 import android.provider.Settings;
 import android.speech.RecognizerIntent;
 import android.support.annotation.NonNull;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -23,27 +26,27 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.CardView;
-import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.example.monet_android1.contactdetailsdemo.R;
 import com.example.monet_android1.contactdetailsdemo.adapter.ViewPagerAdapter;
 import com.example.monet_android1.contactdetailsdemo.appDatabase.MyCallsAppDatabase;
 import com.example.monet_android1.contactdetailsdemo.fragment.CallDetailsFragment;
 import com.example.monet_android1.contactdetailsdemo.fragment.ContactsFragment;
+import com.example.monet_android1.contactdetailsdemo.fragment.OcrFragment;
 import com.example.monet_android1.contactdetailsdemo.user.ContactList;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 import static com.example.monet_android1.contactdetailsdemo.helper.AppUtils.filterNumber;
-import static com.example.monet_android1.contactdetailsdemo.helper.AppUtils.getPhoto;
 import static com.example.monet_android1.contactdetailsdemo.helper.AppUtils.voiceSearch;
 
-
+@SuppressLint("RestrictedApi")
 public class MainActivity extends AppCompatActivity {
 
     private TabLayout tabLayout;
@@ -57,6 +60,8 @@ public class MainActivity extends AppCompatActivity {
     private CallDetailsFragment callDetailsFragment = new CallDetailsFragment();
     private CardView card_search;
     private ImageView search;
+    private FloatingActionButton fab_main;
+    private CoordinatorLayout.LayoutParams lp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,6 +72,9 @@ public class MainActivity extends AppCompatActivity {
         viewPager = findViewById(R.id.viewPager);
         card_search = findViewById(R.id.card_search);
         search = findViewById(R.id.img_mainSearch);
+        fab_main = findViewById(R.id.fab_main);
+
+        lp = (CoordinatorLayout.LayoutParams) fab_main.getLayoutParams();
 
         search.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -78,10 +86,45 @@ public class MainActivity extends AppCompatActivity {
         adapter = new ViewPagerAdapter(getSupportFragmentManager());
         adapter.addFragment(new ContactsFragment(), "");
         adapter.addFragment(new CallDetailsFragment(), "");
+        adapter.addFragment(new OcrFragment(), "");
 
         viewPager.setAdapter(adapter);
         tabLayout.setupWithViewPager(viewPager);
         tabLayout.setSelectedTabIndicatorColor(Color.parseColor("#D81B60"));
+
+
+        tabLayout.setOnTabSelectedListener(new TabLayout.BaseOnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                if(tab.getPosition() == 1){
+                    lp.gravity = Gravity.CENTER;
+                    fab_main.setLayoutParams(lp);
+                    fab_main.setVisibility(View.VISIBLE);
+                }else if (tab.getPosition() == 0){
+                    lp.gravity = Gravity.RIGHT;
+                    fab_main.setLayoutParams(lp);
+                    fab_main.setVisibility(View.VISIBLE);
+                }else{
+                    fab_main.setVisibility(View.GONE);
+                }
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+//                Toast.makeText(MainActivity.this, ""+tab.getCustomView(), Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+            }
+        });
+
+        fab_main.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(Intent.ACTION_DIAL, Uri.parse("tel:")));
+            }
+        });
 
         myCallsAppDatabase = Room.databaseBuilder(this, MyCallsAppDatabase.class, "calldb")
                 .allowMainThreadQueries()
@@ -107,6 +150,7 @@ public class MainActivity extends AppCompatActivity {
     private void setupTabIcons() {
         tabLayout.getTabAt(0).setIcon(R.drawable.ic_group_24dp);
         tabLayout.getTabAt(1).setIcon(R.drawable.ic_call_detail);
+        tabLayout.getTabAt(2).setIcon(R.drawable.ic_general_ocr);
     }
 
     @Override
@@ -142,7 +186,8 @@ public class MainActivity extends AppCompatActivity {
         contactList.getName().clear();
         contactList.getMobile().clear();
         contactList.getImageList().clear();
-        Cursor phones = getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null, null, null);
+        Cursor phones = getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+                null, null, null, null);
         while (phones.moveToNext()) {
             String name = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
             String phoneNumber = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
@@ -186,7 +231,8 @@ public class MainActivity extends AppCompatActivity {
                 Manifest.permission.READ_PHONE_STATE) + ContextCompat.checkSelfPermission(this,
                 Manifest.permission.CALL_PHONE) + ContextCompat.checkSelfPermission(this,
                 Manifest.permission.READ_CONTACTS) + ContextCompat.checkSelfPermission(this,
-                Manifest.permission.WRITE_CONTACTS);
+                Manifest.permission.WRITE_CONTACTS)+ ContextCompat.checkSelfPermission(this,
+                Manifest.permission.CAMERA);
         return result == PERMISSION_GRANTED;
     }
 
@@ -210,7 +256,7 @@ public class MainActivity extends AppCompatActivity {
         } else {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_PHONE_STATE,
                     Manifest.permission.CALL_PHONE, Manifest.permission.READ_CONTACTS,
-                    Manifest.permission.WRITE_CONTACTS}, 1012);
+                    Manifest.permission.WRITE_CONTACTS, Manifest.permission.CAMERA}, 1012);
         }
     }
 

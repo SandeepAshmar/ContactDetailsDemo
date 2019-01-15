@@ -18,7 +18,7 @@
                                 <PersistentState>
                                   <option name="values">
                                     <map>
-                                      <entry key="url" value="jar:file:/C:/Program%20Files/Android/Android%20Studio/plugins/android/lib/android.jar!/images/material_design_icons/content/ic_content_copy_black_24dp.xml" />
+                                      <entry key="url" value="jar:file:/C:/Program%20Files/Android/Android%20Studio/plugins/android/lib/android.jar!/images/material_design_icons/communication/ic_call_black_24dp.xml" />
                                     </map>
                                   </option>
                                 </PersistentState>
@@ -30,8 +30,8 @@
                           <map>
                             <entry key="assetSourceType" value="FILE" />
                             <entry key="color" value="ffffff" />
-                            <entry key="outputName" value="ic_app_icon" />
-                            <entry key="sourceFile" value="C:\Users\Monet-Android1\Desktop\app_icon.svg" />
+                            <entry key="outputName" value="ic_general_ocr" />
+                            <entry key="sourceFile" value="C:\Users\Monet-Android1\Desktop\general_ocr.svg" />
                           </map>
                         </option>
                       </PersistentState>
