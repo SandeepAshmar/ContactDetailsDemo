@@ -8,6 +8,7 @@ import android.content.ContentProviderOperation;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.OperationApplicationException;
 import android.content.pm.PackageManager;
@@ -20,12 +21,15 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.RemoteException;
 import android.provider.ContactsContract;
+import android.provider.Settings;
 import android.provider.Telephony;
 import android.speech.RecognizerIntent;
 import android.support.v4.app.ActivityCompat;
+import android.support.v7.app.AlertDialog;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
+import com.example.monet_android1.contactdetailsdemo.R;
 import com.example.monet_android1.contactdetailsdemo.activity.SearchScreen;
 
 import java.io.ByteArrayInputStream;
@@ -253,7 +257,7 @@ public class AppUtils {
         }
     }
 
-    public void updateContact (String contactId, String newNumber, String name , Activity act)
+    public static void updateContact (String contactId, String newNumber, String name , Activity act)
             throws RemoteException, OperationApplicationException {
 
         //ASSERT: @contactId alreay has a work phone number
@@ -270,7 +274,7 @@ public class AppUtils {
     }
 
     @SuppressLint("NewApi")
-    public void getAllSms(Context context) {
+    public static void getAllSms(Context context) {
 
         ContentResolver cr = context.getContentResolver();
         Cursor c = cr.query(Telephony.Sms.CONTENT_URI, null, null, null, null);
@@ -308,5 +312,22 @@ public class AppUtils {
         } else {
             Toast.makeText(context, "No message to show!", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    public static void settingDialog(final Context context){
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(context, R.style.DialogTheme);
+        alertDialog.setMessage("You Have To Give Permission From Your Device Setting To go in Setting Please Click on Settings Button");
+        alertDialog.setCancelable(false);
+        alertDialog.setPositiveButton("Go To Settings", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                Uri uri = Uri.fromParts("package", context.getPackageName(), null);
+                intent.setData(uri);
+                context.startActivity(intent);
+            }
+        });
+        alertDialog.show();
     }
 }

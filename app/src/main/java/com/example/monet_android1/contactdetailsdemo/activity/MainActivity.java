@@ -44,6 +44,7 @@ import java.util.Collections;
 
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 import static com.example.monet_android1.contactdetailsdemo.helper.AppUtils.filterNumber;
+import static com.example.monet_android1.contactdetailsdemo.helper.AppUtils.settingDialog;
 import static com.example.monet_android1.contactdetailsdemo.helper.AppUtils.voiceSearch;
 
 @SuppressLint("RestrictedApi")
@@ -86,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
         adapter = new ViewPagerAdapter(getSupportFragmentManager());
         adapter.addFragment(new ContactsFragment(), "");
         adapter.addFragment(new CallDetailsFragment(), "");
-        adapter.addFragment(new OcrFragment(), "");
+//        adapter.addFragment(new OcrFragment(), "");
 
         viewPager.setAdapter(adapter);
         tabLayout.setupWithViewPager(viewPager);
@@ -150,7 +151,7 @@ public class MainActivity extends AppCompatActivity {
     private void setupTabIcons() {
         tabLayout.getTabAt(0).setIcon(R.drawable.ic_group_24dp);
         tabLayout.getTabAt(1).setIcon(R.drawable.ic_call_detail);
-        tabLayout.getTabAt(2).setIcon(R.drawable.ic_general_ocr);
+//        tabLayout.getTabAt(2).setIcon(R.drawable.ic_general_ocr);
     }
 
     @Override
@@ -231,52 +232,25 @@ public class MainActivity extends AppCompatActivity {
                 Manifest.permission.READ_PHONE_STATE) + ContextCompat.checkSelfPermission(this,
                 Manifest.permission.CALL_PHONE) + ContextCompat.checkSelfPermission(this,
                 Manifest.permission.READ_CONTACTS) + ContextCompat.checkSelfPermission(this,
-                Manifest.permission.WRITE_CONTACTS)+ ContextCompat.checkSelfPermission(this,
-                Manifest.permission.CAMERA);
+                Manifest.permission.WRITE_CONTACTS);
         return result == PERMISSION_GRANTED;
     }
 
     private void requestPhoneStatePermission() {
         if (ActivityCompat.shouldShowRequestPermissionRationale
                 (this, Manifest.permission.READ_PHONE_STATE)) {
-            AlertDialog.Builder alertDialog = new AlertDialog.Builder(this, R.style.DialogTheme);
-            alertDialog.setMessage("You Have To Give Permission From Your Device Setting To go in Setting Please Click on Settings Button");
-            alertDialog.setCancelable(false);
-            alertDialog.setPositiveButton("Go To Settings", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-                    Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    Uri uri = Uri.fromParts("package", getPackageName(), null);
-                    intent.setData(uri);
-                    startActivity(intent);
-                }
-            });
-            alertDialog.show();
+            settingDialog(this);
         } else {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_PHONE_STATE,
                     Manifest.permission.CALL_PHONE, Manifest.permission.READ_CONTACTS,
-                    Manifest.permission.WRITE_CONTACTS, Manifest.permission.CAMERA}, 1012);
+                    Manifest.permission.WRITE_CONTACTS}, 1012);
         }
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (grantResults.length > 0 && grantResults[0] != PERMISSION_GRANTED) {
-            AlertDialog.Builder alertDialog = new AlertDialog.Builder(this, R.style.DialogTheme);
-            alertDialog.setMessage("You Have To Give Permission From Your Device Setting To go in Setting Please Click on Settings Button");
-            alertDialog.setCancelable(false);
-            alertDialog.setPositiveButton("Go To Settings", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-                    Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    Uri uri = Uri.fromParts("package", getPackageName(), null);
-                    intent.setData(uri);
-                    startActivity(intent);
-                }
-            });
-            alertDialog.show();
+            settingDialog(this);
         } else {
 
         }

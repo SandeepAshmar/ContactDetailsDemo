@@ -8,6 +8,116 @@
     <SurfaceView
         android:id="@+id/surface"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        android:visibility="gone"/>
+
+    <android.support.v4.widget.NestedScrollView
+        android:id="@+id/scroll"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_margin="5dp">
+
+            <ImageView
+                android:id="@+id/img_scanAgain"
+                android:layout_width="match_parent"
+                android:layout_height="180dp"
+                android:layout_gravity="end"
+                android:layout_marginTop="10dp"
+                android:layout_marginRight="10dp"
+                android:scaleType="fitXY"
+                android:background="@drawable/ic_image_black_24dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="* Click on image preview to upload an Image"
+                android:layout_marginBottom="10dp"/>
+
+            <!--<TextView-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:textSize="20sp"-->
+                <!--android:text="Contact Details:"-->
+                <!--android:gravity="center"-->
+                <!--android:layout_marginTop="10dp"-->
+                <!--android:textColor="@android:color/black"/>-->
+
+            <!--<EditText-->
+                <!--android:id="@+id/tv_scanName"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:hint="Person Name"-->
+                <!--android:inputType="text"-->
+                <!--android:layout_marginTop="10dp"/>-->
+            <!--<EditText-->
+                <!--android:id="@+id/tv_scanMobile"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:hint="Person Mobile"-->
+                <!--android:inputType="phone"/>-->
+            <!--<EditText-->
+                <!--android:id="@+id/tv_scanEmail"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:hint="Person email"-->
+                <!--android:inputType="textEmailAddress"/>-->
+
+            <!--<LinearLayout-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:orientation="horizontal"-->
+                <!--android:layout_marginTop="10dp">-->
+
+                <!--<Button-->
+                    <!--android:layout_width="0dp"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:layout_weight="1"-->
+                    <!--android:background="@color/colorPrimary"-->
+                    <!--android:layout_margin="5dp"-->
+                    <!--android:text="Save"-->
+                    <!--android:textColor="@android:color/white"-->
+                    <!--android:foreground="?android:selectableItemBackground"-->
+                    <!--android:clickable="true"/>-->
+
+                <!--<Button-->
+                    <!--android:layout_width="0dp"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:layout_weight="1"-->
+                    <!--android:background="@color/colorPrimary"-->
+                    <!--android:layout_margin="5dp"-->
+                    <!--android:text="Clear"-->
+                    <!--android:textColor="@android:color/white"-->
+                    <!--android:foreground="?android:selectableItemBackground"-->
+                    <!--android:clickable="true"/>-->
+
+            <!--</LinearLayout>-->
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/black"
+                android:textSize="20sp"
+                android:text="Scan Result:"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:layout_margin="10dp"/>
+
+            <TextView
+                android:id="@+id/tv_allResult"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/black"
+                android:textSize="16sp"
+                android:hint="No Result to show"
+                android:layout_margin="10dp"/>
+
+        </LinearLayout>
+
+    </android.support.v4.widget.NestedScrollView>
 
 </RelativeLayout>
